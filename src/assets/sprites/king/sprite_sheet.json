@@ -1,0 +1,21 @@
+{
+  "image": "sprite_sheet.png",
+  "frame_width": 25,
+  "frame_height": 62,
+  "columns": 8,
+  "rows": 1,
+  "directions": [
+    "front",
+    "front_right",
+    "right",
+    "back_right",
+    "back",
+    "back_left",
+    "left",
+    "front_left"
+  ],
+  "source_frames": [
+    1
+  ],
+  "layout": "column = direction, row = animation frame"
+}
