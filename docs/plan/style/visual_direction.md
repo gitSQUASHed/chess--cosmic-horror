@@ -4,13 +4,13 @@
 
 The game uses pixel-art sprites and a retro green monochrome palette. It is dark, grainy, and cosmic-horror oriented. The visible world should feel small and fragile against vast, dark space.
 
-The reference for Phase 2 is a dark isometric scene with strong vignette, heavy static/grain, small islands of green terrain, and a tiny character at its centre. The UI shown in that reference is not part of this game's direction.
+The reference for Phase 2 is a dark angled top-down scene with strong vignette, heavy static/grain, small islands of green terrain, and a tiny character at its centre. The UI shown in that reference is not part of this game's direction.
 
 ## Phase contrast
 
 ### Phase 1
 
-- Clean, non-isometric top-down board view.
+- Angled top-down board view (the camera looks down at a tilt, not straight from above). The board is not rotated.
 - Black/dark and light chess tiles must be clearly distinct despite the green palette.
 - The board, clock, and silhouettes give the scene physical context.
 - The king colour corresponds to its chess side.
@@ -18,7 +18,7 @@ The reference for Phase 2 is a dark isometric scene with strong vignette, heavy 
 
 ### Phase 2
 
-- Isometric view with gentle fisheye distortion.
+- The same angled top-down view as Phase 1, with the field rotated by roughly 30 degrees around the vertical axis. The exact angle is set once the sprites are final and is a single configurable value. Gentle fisheye distortion on top.
 - Pure void behind the world: no room, player silhouettes, clock, or horizon.
 - Only a small radius of dark-green tile pillars is visible.
 - The king is isolated in a small island of legibility.

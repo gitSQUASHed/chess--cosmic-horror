@@ -13,7 +13,7 @@ Survive for two minutes as the players try to clear the chessboard.
 
 ## Background and lore layer
 
-The board is seen from a clean, non-isometric top-down angle. Behind it are two large, dark chess-player silhouettes. They only use restrained idle animation: breathing, posture changes, head turns, or a small arm movement.
+The board is seen from a clean, angled top-down view, not rotated. Behind it are two large, dark chess-player silhouettes. They only use restrained idle animation: breathing, posture changes, head turns, or a small arm movement.
 
 A large, faint two-minute chess clock sits subtly to one side of the board. It is readable if the player looks for it but is not a conventional HUD. Its side secretly records the escape direction for Phase 2. The game does not explain this connection.
 

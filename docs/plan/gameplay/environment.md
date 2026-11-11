@@ -3,7 +3,7 @@
 ## Phase 1 — Chessboard
 
 - The playable space is a finite 8×8 board of clear light and dark squares.
-- It uses a top-down view; board edges are solid.
+- It uses an angled top-down view; board edges are solid.
 - Temporary hand-created walls occupy board squares and block the king.
 - A faint chess clock appears on one board side. That side encodes the eventual Phase 2 escape direction without an explicit objective marker.
 - At the end of Phase 1, the board collapses and transitions the king into Phase 2.
