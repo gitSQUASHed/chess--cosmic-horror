@@ -25,8 +25,13 @@
 
 The Blender sprite-sheet renderer in `tools/blender/` and the sprite-sheet folders on the `assets` branch belong to the earlier 2D-sprite plan. They are not part of the pipeline above.
 
+## Decisions
+
+- **Model format and layout:** glTF (`.glb`) or Godot scenes (`.tscn`) in `src/assets/models/`, named after the placeholder they replace. See `src/assets/models/README.md` for the full name and animation clip list. A missing model falls back to a named placeholder.
+- **Gameplay logic:** 3D physics drives the logic. Hands, king, walls, pillars, and the void are bodies and areas on named collision layers (`src/core/layers.gd`). The Phase 1 king still moves between exact tiles, with a physics check at the target tile.
+- **Pixelation:** a full-resolution post-process shader on a canvas layer (`src/fx/screen.gdshader`). Pixel size is a runtime value.
+
 ## Open questions
 
-- Model format and import path (for example glTF) and the naming and folder layout for models.
-- Whether gameplay rules run on the tile grid with 3D used for presentation and collision checks, or whether 3D physics drives the logic directly.
-- The render-target resolution strategy for the pixelation layer (fixed low resolution versus scaled).
+- Final model designs and animation sets.
+- Final pixel font for the textbox (`src/assets/fonts/pixel.ttf` is picked up automatically if present).

@@ -16,7 +16,7 @@ Transitions between these moments are authored as camera, pixel-size, and effect
 
 ## Phase 1 treatment
 
-- Very light grain/static, if any.
+- Light grain and static (a visible but restrained TV-style noise).
 - Preserve clean board readability and high contrast between chess squares.
 - Hand glow increases as a hand travels out of a rear silhouette toward the board, functioning as attack indication.
 - The faint background clock and silhouettes remain readable enough to reward attention.
@@ -24,8 +24,8 @@ Transitions between these moments are authored as camera, pixel-size, and effect
 ## Phase 2 treatment
 
 - Strong dark vignette to limit visible space.
-- Constant low-level static/grain.
-- Gentle fisheye distortion; it should be felt rather than make navigation disorienting by itself.
+- Constant static/grain, stronger than in Phase 1, rising with the guiding-hand threat.
+- Pronounced fisheye distortion that bends the whole view toward the centre. It must still leave tile edges readable enough to navigate.
 - Deep black/green void beyond the visible pillar radius.
 - Pillars can use subdued per-instance colour variation around one base green.
 - Rising terrain emerges from blackness; removed pillars descend, darken, and vanish into the void.

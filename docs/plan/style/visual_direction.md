@@ -18,7 +18,7 @@ The reference for Phase 2 is a dark angled top-down scene with strong vignette, 
 
 ### Phase 2
 
-- The same kind of angled top-down camera as Phase 1, with the view rotated by roughly 30 degrees around the vertical axis. The exact angle is tuned in playtest and is a single configurable value. Gentle fisheye distortion on top.
+- The same kind of angled top-down camera as Phase 1, with the view rotated by roughly 30 degrees around the vertical axis. The exact angle is tuned in playtest and is a single configurable value. Pronounced fisheye distortion on top.
 - Pure void behind the world: no room, player silhouettes, clock, or horizon.
 - Only a small radius of dark-green tile pillars is visible.
 - The king is isolated in a small island of legibility.

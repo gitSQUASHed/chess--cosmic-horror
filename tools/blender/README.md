@@ -1,5 +1,7 @@
 # Blender sprite-sheet rendering
 
+> Legacy: this tool belongs to the earlier 2D-sprite plan. The game now renders 3D models live (see `docs/plan/technical/asset_pipeline.md`). It is kept for reference only.
+
 `render_8dir_animation_sprites.py` renders an animated selected model to a
 pixel-art sprite sheet that Godot can import.
 
