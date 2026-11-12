@@ -61,9 +61,9 @@ static func phase_two_pose(focus: Vector3) -> Pose:
 	var result := Pose.new()
 	result.focus = focus
 	result.yaw_deg = Constants.PHASE2_YAW_DEG
-	result.tilt_deg = 55.0
-	result.distance = 12.0
-	result.fov = 40.0
+	result.tilt_deg = Constants.PHASE2_TILT_DEG
+	result.distance = 16.0
+	result.fov = 35.0
 	return result
 
 

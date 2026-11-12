@@ -11,6 +11,8 @@ const MIN_TELEGRAPH := 0.5
 const KING_MOVE_SECONDS := 0.14
 const KING_START_TILE := Vector2i(3, 4)
 ## Default Phase 2 camera rotation around the vertical axis. Tuned in playtest.
-const PHASE2_YAW_DEG := 30.0
+const PHASE2_YAW_DEG := 40.0
+## Phase 2 camera tilt above the horizon (lower = more isometric).
+const PHASE2_TILT_DEG := 38.0
 ## Pillars farther than this from the king sink into the void; closer ones rise out of it.
 const PILLAR_REVEAL_RADIUS := 5

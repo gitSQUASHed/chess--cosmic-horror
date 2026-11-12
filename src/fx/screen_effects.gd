@@ -3,7 +3,7 @@ extends Node
 ## Drives the screen shader per phase and from the guiding-hand threat value.
 ## Phase 1: light grain and static. Phase 2: vignette, grain, static, gentle fisheye, and a threat response
 ## (white bloom, denser static, camera shake, slightly larger pixels). Bloom is capped so the
-## king stays readable. Each effect can be toggled for debugging (F5 to F8).
+## king stays readable. Each effect can be toggled for debugging (F5 to F9; F9 is the green palette).
 
 enum Mode { NONE, PHASE_ONE, PHASE_TWO }
 
@@ -23,6 +23,7 @@ var _static := 0.0
 var _fisheye := 0.0
 var _bloom := 0.0
 var _boost := 0.0
+var _palette_on := true
 
 
 func setup(pixelation: PixelationLayer, camera: CameraRig) -> void:
@@ -88,3 +89,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			enabled["fisheye"] = not enabled["fisheye"]
 		KEY_F8:
 			enabled["bloom"] = not enabled["bloom"]
+		KEY_F9:
+			_palette_on = not _palette_on
+			_layer.set_palette_enabled(_palette_on)

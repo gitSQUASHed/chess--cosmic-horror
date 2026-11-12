@@ -8,17 +8,17 @@ uniform sampler2D screen_tex : hint_screen_texture, filter_nearest, repeat_disab
 uniform float pixel_size : hint_range(1.0, 64.0) = 3.0;
 uniform float pixel_boost : hint_range(0.0, 32.0) = 0.0;
 uniform float fade : hint_range(0.0, 1.0) = 0.0;
-uniform float palette_mix : hint_range(0.0, 1.0) = 0.0;
+uniform float palette_mix : hint_range(0.0, 1.0) = 1.0;
 uniform float vignette : hint_range(0.0, 1.0) = 0.0;
 uniform float grain : hint_range(0.0, 1.0) = 0.0;
 // TV-style static: per-pixel-cell noise that changes every few frames, plus rare bright streaks.
 uniform float static_amount : hint_range(0.0, 1.0) = 0.0;
 uniform float fisheye : hint_range(0.0, 1.0) = 0.0;
 uniform float bloom : hint_range(0.0, 1.0) = 0.0;
-uniform vec3 color_dark : source_color = vec3(0.02, 0.04, 0.03);
-uniform vec3 color_deep : source_color = vec3(0.08, 0.19, 0.11);
-uniform vec3 color_mid : source_color = vec3(0.18, 0.42, 0.25);
-uniform vec3 color_light : source_color = vec3(0.71, 0.91, 0.74);
+uniform vec3 color_dark : source_color = vec3(0.09, 0.10, 0.09);
+uniform vec3 color_deep : source_color = vec3(0.17, 0.21, 0.18);
+uniform vec3 color_mid : source_color = vec3(0.33, 0.42, 0.34);
+uniform vec3 color_light : source_color = vec3(0.78, 0.90, 0.74);
 
 float hash(vec2 p) {
 	return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);

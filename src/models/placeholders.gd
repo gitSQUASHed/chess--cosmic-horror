@@ -82,8 +82,14 @@ static func set_brightness(model: Node3D, brightness: float) -> void:
 			model.set_meta("base_colour", material.albedo_color)
 		var base: Color = model.get_meta("base_colour")
 		material.albedo_color = Color(base.r * brightness, base.g * brightness, base.b * brightness, base.a)
-		material.emission_enabled = brightness > 1.0
-		material.emission = base
+		if model.has_meta("glow"):
+			# Hands are celestial: always emissive, so they stay the brightest thing on screen.
+			material.emission_enabled = true
+			material.emission = base
+			material.emission_energy_multiplier = brightness * 1.2
+		else:
+			material.emission_enabled = brightness > 1.0
+			material.emission = base
 
 
 static func king(is_white: bool) -> Node3D:
@@ -92,11 +98,17 @@ static func king(is_white: bool) -> Node3D:
 
 
 static func hand(asset_label: String, size: Vector3 = Vector3(1.0, 0.5, 1.0)) -> Node3D:
-	return make(asset_label, "box", size, Palette.HAND)
+	var model := make(asset_label, "box", size, Palette.HAND)
+	model.set_meta("glow", true)
+	set_brightness(model, 1.0)
+	return model
 
 
 static func guiding_hand() -> Node3D:
-	return make("hand/guiding-missile", "box", Vector3(1.2, 0.8, 1.2), Palette.HAND)
+	var model := make("hand/guiding-missile", "box", Vector3(1.2, 0.8, 1.2), Palette.HAND)
+	model.set_meta("glow", true)
+	set_brightness(model, 1.0)
+	return model
 
 
 static func tile(is_light: bool) -> Node3D:
@@ -104,7 +116,7 @@ static func tile(is_light: bool) -> Node3D:
 
 
 static func pillar() -> Node3D:
-	return make("pillar", "box", Vector3(0.96, 0.6, 0.96), Palette.PILLAR, false)
+	return make("pillar", "box", Vector3(0.94, 0.6, 0.94), Palette.PILLAR, false)
 
 
 static func wall_segment() -> Node3D:

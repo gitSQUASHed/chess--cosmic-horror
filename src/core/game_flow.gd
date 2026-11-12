@@ -46,13 +46,13 @@ func _build_stage() -> void:
 	environment.background_color = Palette.VOID_BLACK
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color = Color(0.6, 0.6, 0.6)
-	environment.ambient_light_energy = 0.7
+	environment.ambient_light_energy = 0.45
 	var world_environment := WorldEnvironment.new()
 	world_environment.environment = environment
 	add_child(world_environment)
 	var sun := DirectionalLight3D.new()
 	sun.rotation_degrees = Vector3(-60.0, 25.0, 0.0)
-	sun.light_energy = 1.1
+	sun.light_energy = 0.8
 	add_child(sun)
 	context.camera = CameraRig.new()
 	add_child(context.camera)

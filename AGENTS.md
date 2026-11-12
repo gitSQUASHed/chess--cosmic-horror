@@ -44,7 +44,7 @@ Godot 4 (3D) cosmic-horror survival game: a chess king survives hands that clear
 
 - Run: open the project in Godot 4.3 or newer and press Run (main scene is `src/main.tscn`).
 - Syntax check without Godot: `pip install gdtoolkit` then `gdparse src/*/*.gd`.
-- Debug keys: R restart, F2 jump to Phase 2, F3 skip time, F10 hide debug text, `[`/`]` pixel size, F5 to F8 toggle vignette, grain and static, fisheye, bloom.
+- Debug keys: R restart, F2 jump to Phase 2, F3 skip time, F10 hide debug text, `[`/`]` pixel size, F5 to F8 toggle vignette, grain and static, fisheye, bloom, F9 toggles the green palette.
 
 ## Style
 
