@@ -2,7 +2,7 @@
 
 ## Core look
 
-The game uses pixel-art sprites and a retro green monochrome palette. It is dark, grainy, and cosmic-horror oriented. The visible world should feel small and fragile against vast, dark space.
+The game is a real-time 3D scene, rendered at low resolution and pixelated by a screen-space layer on top, with a retro green monochrome palette. Models are 3D; the pixel look comes from the rendering, not from pre-drawn sprites. It is dark, grainy, and cosmic-horror oriented. The visible world should feel small and fragile against vast, dark space.
 
 The reference for Phase 2 is a dark angled top-down scene with strong vignette, heavy static/grain, small islands of green terrain, and a tiny character at its centre. The UI shown in that reference is not part of this game's direction.
 
@@ -10,7 +10,7 @@ The reference for Phase 2 is a dark angled top-down scene with strong vignette, 
 
 ### Phase 1
 
-- Angled top-down board view (the camera looks down at a tilt, not straight from above). The board is not rotated.
+- Angled top-down camera looking down at the board at a tilt. The board is not rotated. The camera angle is a tunable value, not baked into the art.
 - Black/dark and light chess tiles must be clearly distinct despite the green palette.
 - The board, clock, and silhouettes give the scene physical context.
 - The king colour corresponds to its chess side.
@@ -18,7 +18,7 @@ The reference for Phase 2 is a dark angled top-down scene with strong vignette, 
 
 ### Phase 2
 
-- The same angled top-down view as Phase 1, with the field rotated by roughly 30 degrees around the vertical axis. The exact angle is set once the sprites are final and is a single configurable value. Gentle fisheye distortion on top.
+- The same kind of angled top-down camera as Phase 1, with the view rotated by roughly 30 degrees around the vertical axis. The exact angle is tuned in playtest and is a single configurable value. Gentle fisheye distortion on top.
 - Pure void behind the world: no room, player silhouettes, clock, or horizon.
 - Only a small radius of dark-green tile pillars is visible.
 - The king is isolated in a small island of legibility.

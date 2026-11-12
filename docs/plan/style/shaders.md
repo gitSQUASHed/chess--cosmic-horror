@@ -2,7 +2,17 @@
 
 ## Global pixel treatment
 
-Sprites are rendered from 3D source models as pixel-art sheets, then shown as 2D gameplay sprites. The game may add a restrained CRT/static treatment on top. The effect should support readability, never obscure the king or immediate platform edges.
+The 3D scene is rendered to a low-resolution target and then pixelated by a canvas layer on top of the game. That layer also carries the other screen effects (palette mapping, grain, vignette, fisheye, bloom). The effects should support readability, never obscure the king or immediate platform edges.
+
+### Dynamic pixelation
+
+Pixel size is a runtime value, not a fixed asset property. It can change smoothly to support moments such as:
+
+- the king being grabbed, where the view can move closer or distort while the pixel size changes;
+- falling into the void, including the Phase 1 to Phase 2 fall;
+- the guiding hand's proximity, as an additional feedback channel.
+
+Transitions between these moments are authored as camera, pixel-size, and effect animations over the live scene instead of as cuts between sprite animations.
 
 ## Phase 1 treatment
 

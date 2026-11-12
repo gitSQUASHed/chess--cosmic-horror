@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://b4avds3bixoxg"]
 
-[ext_resource type="Script" path="res://tests/mvp/mvp.gd" id="1_mvp"]
+[ext_resource type="Script" uid="uid://bq17v5qo5novj" path="res://tests/mvp/mvp.gd" id="1_mvp"]
 
 [node name="GameplayMvp" type="Node2D"]
 script = ExtResource("1_mvp")

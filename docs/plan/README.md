@@ -1,6 +1,6 @@
 # Chess — After the Game Ends: Design Plan
 
-This directory is the current source of truth for the game plan. The game is a minimal-UI cosmic-horror survival game about a two-dimensional chess king who discovers that the chess players above his board are godlike beings.
+This directory is the current source of truth for the game plan. The game is a minimal-UI cosmic-horror survival game about a chess king who discovers that the chess players above his board are godlike beings.
 
 ## Design pillars
 
@@ -28,11 +28,13 @@ The gameplay documents define the product rules. The MVP is a validation build t
 - [Colour palette](style/colors.md)
 - [Shader and screen-effect plan](style/shaders.md)
 - [Interface, text, and audio-visual feedback](style/interface_and_feedback.md)
-- [Sprite and asset pipeline](technical/asset_pipeline.md)
+- [Rendering and asset pipeline](technical/asset_pipeline.md)
 
 ## Intentionally undecided
 
-- Exact art style and model designs beyond the agreed retro-green, pixel-art direction.
+- Exact model designs beyond the agreed retro-green, pixelated direction.
+- Exact camera angles, pixelation levels, and field rotation (all are tunable values, see the [visual direction](style/visual_direction.md)).
+- How gameplay logic and 3D collision relate (see the [rendering pipeline](technical/asset_pipeline.md)).
 - Exact movement speed, jump distance, attack cooldowns, and tile radius.
 - Whether Phase 2 begins at a checkpoint after the player has reached it once.
 - Exact dialogue and sound design.

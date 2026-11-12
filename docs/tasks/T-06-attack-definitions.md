@@ -1,24 +1,21 @@
 # T-06 Attack definitions with levels
 
-## Goal
-All action rules as data, so `Hand` stays dumb and balance lives in one place.
-
 ## Scope
-- `AttackDefinition` resource: kind, level, shape and size, base telegraph, active duration, recovery, effect (damage, block, destroy tile), availability phase.
-- Definitions per the [catalogue](../plan/gameplay/enemy_mechanics.md):
+- `AttackDefinition` resource per action and level: kind, shape, size, telegraph, active duration, recovery, effect (capture, block, destroy tile), availability.
+- Values per the [catalogue](../plan/gameplay/enemy_mechanics.md):
 
 | Kind | Level 1 | Level 2 |
 |---|---|---|
 | sweep | 1 tile wide | 3 wide |
-| grab | 3x3 square | 5x5 circle |
-| wall | 3x1 line | 5x1 line |
-| swipe | 1x1 | 3x1 |
-| void removal | 1 tile | 2x2 |
-| punch | 1 tile | 3x3 |
+| grab | 3×3 square | 5×5 circle |
+| wall | 3×1 line | 5×1 line |
+| swipe | 1×1 | 3×1 |
+| void removal | 1 tile | 2×2 |
+| punch | 1 tile | 3×3 |
 
-- `area_for(command)` returns the affected cells or shape; used by hands, directors, and collision.
-- Placeholder names match the asset folders under `src/assets/sprites/hand/` (`sweep-lvl1`, `grabbing-lvl1`, ...).
+- Each definition can create its collision volume (box or cylinder) for a given anchor and direction.
+- Balance values live only in these resources.
 
 ## Acceptance criteria
-- Each definition returns the correct cell set for a sample anchor and direction.
-- Balance values live only in these resources.
+- Each definition produces a volume with the correct footprint.
+- Asset names match the placeholder naming `hand/<action>-lvl<N>`.
