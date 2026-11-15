@@ -6,6 +6,10 @@ The game is a real-time 3D scene, rendered at low resolution and pixelated by a 
 
 The reference for Phase 2 is a dark angled top-down scene with strong vignette, heavy static/grain, small islands of green terrain, and a tiny character at its centre. The UI shown in that reference is not part of this game's direction.
 
+![Phase 2 target look](reference/phase2_target.png)
+
+The image is the target for Phase 2: a dark gray-green void with grain, a lit island of mid-green tile pillars with visible seams and an irregular edge, a low diagonal camera, and a tiny king. Ignore the score number and bar at the top.
+
 ## Phase contrast
 
 ### Phase 1
