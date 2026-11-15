@@ -83,9 +83,10 @@ static func set_brightness(model: Node3D, brightness: float) -> void:
 		var base: Color = model.get_meta("base_colour")
 		material.albedo_color = Color(base.r * brightness, base.g * brightness, base.b * brightness, base.a)
 		if model.has_meta("glow"):
-			# Hands are celestial: always emissive, so they stay the brightest thing on screen.
+			# Hands are celestial: always emissive with a near-white light, so they stay the
+			# brightest thing on screen after the palette mapping (a pure red would map dark).
 			material.emission_enabled = true
-			material.emission = base
+			material.emission = base.lerp(Color.WHITE, 0.6)
 			material.emission_energy_multiplier = brightness * 1.2
 		else:
 			material.emission_enabled = brightness > 1.0
@@ -94,7 +95,15 @@ static func set_brightness(model: Node3D, brightness: float) -> void:
 
 static func king(is_white: bool) -> Node3D:
 	var colour := Palette.KING_WHITE_SIDE if is_white else Palette.KING_BLACK_SIDE
-	return make("king_white" if is_white else "king_black", "capsule", Vector3(0.5, 0.9, 0.5), colour)
+	var model := make("king_white" if is_white else "king_black", "capsule", Vector3(0.5, 0.9, 0.5), colour)
+	# A faint self-light lifts the king above the surfaces around it after the palette mapping.
+	var body := model.get_node_or_null("Body") as MeshInstance3D
+	if body != null and body.material_override is StandardMaterial3D:
+		var material := body.material_override as StandardMaterial3D
+		material.emission_enabled = true
+		material.emission = colour
+		material.emission_energy_multiplier = 0.35
+	return model
 
 
 static func hand(asset_label: String, size: Vector3 = Vector3(1.0, 0.5, 1.0)) -> Node3D:

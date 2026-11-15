@@ -15,6 +15,8 @@ uniform float grain : hint_range(0.0, 1.0) = 0.0;
 uniform float static_amount : hint_range(0.0, 1.0) = 0.0;
 uniform float fisheye : hint_range(0.0, 1.0) = 0.0;
 uniform float bloom : hint_range(0.0, 1.0) = 0.0;
+// Retro palette ramp. Set per phase by ScreenEffects from Palette.SCREEN_PHASE_*; these
+// defaults are the Phase 1 ramp.
 uniform vec3 color_dark : source_color = vec3(0.09, 0.10, 0.09);
 uniform vec3 color_deep : source_color = vec3(0.17, 0.21, 0.18);
 uniform vec3 color_mid : source_color = vec3(0.33, 0.42, 0.34);
@@ -40,6 +42,11 @@ void fragment() {
 	// White bloom: a capped wash toward white so the scene never goes fully blind.
 	color = mix(color, vec3(1.0), bloom * 0.7);
 
+	// Vignette dims the scene before the palette mapping, so it can only darken toward
+	// color_dark and never pushes the void below the palette.
+	float edge = smoothstep(0.35, 0.95, length((SCREEN_UV - 0.5) * vec2(1.0, 0.85)));
+	color *= 1.0 - vignette * edge;
+
 	float luma = dot(color, vec3(0.299, 0.587, 0.114));
 	float t = clamp(luma, 0.0, 1.0) * 3.0;
 	vec3 mapped = mix(color_dark, color_deep, clamp(t, 0.0, 1.0));
@@ -47,12 +54,10 @@ void fragment() {
 	mapped = mix(mapped, color_light, clamp(t - 2.0, 0.0, 1.0));
 	color = mix(color, mapped, palette_mix);
 
-	float edge = smoothstep(0.35, 0.95, length((SCREEN_UV - 0.5) * vec2(1.0, 0.85)));
-	color *= 1.0 - vignette * edge;
-
+	// Film grain proportional to brightness: lit tiles are noisier than the void.
 	float frame = floor(TIME * 30.0);
 	float noise = hash(cell + frame);
-	color += (noise - 0.5) * grain;
+	color *= 1.0 + (noise - 0.5) * grain * 2.0;
 
 	float snow = hash(cell * 1.7 + frame * 3.1);
 	float streak = step(0.985, hash(vec2(floor(cell.y * 0.5), floor(TIME * 10.0)))) * hash(vec2(cell.x * 0.05, frame));

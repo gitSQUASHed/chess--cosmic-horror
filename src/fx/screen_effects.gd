@@ -1,13 +1,18 @@
 class_name ScreenEffects
 extends Node
 ## Drives the screen shader per phase and from the guiding-hand threat value.
-## Phase 1: light grain and static. Phase 2: vignette, grain, static, gentle fisheye, and a threat response
-## (white bloom, denser static, camera shake, slightly larger pixels). Bloom is capped so the
-## king stays readable. Each effect can be toggled for debugging (F5 to F9; F9 is the green palette).
+## Phase 1: light grain and static, wide palette ramp. Phase 2 at calm follows
+## docs/plan/style/reference/phase2_target.png: its own palette ramp, visible grain, faint static,
+## a barely visible vignette and fisheye. The guiding-hand threat
+## brightens the screen (white bloom) and raises grain, static, vignette, fisheye, shake and
+## pixel size. Bloom is capped so the king stays readable. Each effect can be toggled for
+## debugging (F5 to F9; F9 is the green palette).
 
 enum Mode { NONE, PHASE_ONE, PHASE_TWO }
 
 const BLOOM_MAX := 0.8
+## Shader uniforms of the palette ramp, in the order of Palette.SCREEN_PHASE_*.
+const PALETTE_UNIFORMS: Array[StringName] = [&"color_dark", &"color_deep", &"color_mid", &"color_light"]
 const SMOOTHING := 4.0
 
 ## Debug switches: vignette, grain, fisheye, bloom.
@@ -33,6 +38,9 @@ func setup(pixelation: PixelationLayer, camera: CameraRig) -> void:
 
 func set_mode(mode: Mode) -> void:
 	_mode = mode
+	var ramp := Palette.SCREEN_PHASE_TWO if mode == Mode.PHASE_TWO else Palette.SCREEN_PHASE_ONE
+	for index in range(PALETTE_UNIFORMS.size()):
+		_layer.set_effect(PALETTE_UNIFORMS[index], ramp[index])
 	if mode != Mode.PHASE_TWO:
 		_threat = 0.0
 
@@ -51,13 +59,13 @@ func _process(delta: float) -> void:
 	var target_boost := 0.0
 	match _mode:
 		Mode.PHASE_ONE:
-			target_grain = 0.04
-			target_static = 0.2
+			target_grain = 0.08
+			target_static = 0.15
 		Mode.PHASE_TWO:
-			target_vignette = 0.6 + 0.2 * _threat
-			target_grain = 0.08 + 0.25 * _threat
-			target_static = 0.3 + 0.4 * _threat
-			target_fisheye = 1.0
+			target_vignette = 0.1 + 0.4 * _threat
+			target_grain = 0.16 + 0.3 * _threat
+			target_static = 0.05 + 0.4 * _threat
+			target_fisheye = 0.12 + 0.2 * _threat
 			target_bloom = BLOOM_MAX * _threat * _threat
 			target_boost = Presets.THREAT_BOOST * _threat
 			if _threat > 0.35:

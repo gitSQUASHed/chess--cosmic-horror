@@ -56,14 +56,24 @@ static func phase_one_pose() -> Pose:
 	return result
 
 
+## Cutscenes: the Phase 1 lens (same distance and fov, so models keep their in-game scale) from
+## a low angle, so the 5 m player silhouettes behind the board (z -5) fit in frame and the
+## pieces on the board stay above the bottom textbox.
+static func cutscene_pose() -> Pose:
+	var result := phase_one_pose()
+	result.focus = Vector3(4.0, 2.0, 6.5)
+	result.tilt_deg = 21.0
+	return result
+
+
 ## Follows the king at a fixed distance with the tunable field rotation.
 static func phase_two_pose(focus: Vector3) -> Pose:
 	var result := Pose.new()
 	result.focus = focus
 	result.yaw_deg = Constants.PHASE2_YAW_DEG
 	result.tilt_deg = Constants.PHASE2_TILT_DEG
-	result.distance = 16.0
-	result.fov = 35.0
+	result.distance = Constants.PHASE2_DISTANCE
+	result.fov = Constants.PHASE2_FOV_DEG
 	return result
 
 

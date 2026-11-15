@@ -20,12 +20,10 @@ func setup(game_context: GameContext, name_value: String, hint_after: String = "
 
 func _ready() -> void:
 	var data := Cutscenes.get_cutscene(cutscene_name)
-	var pose := CameraRig.phase_one_pose()
-	pose.tilt_deg = 40.0
-	pose.distance = 10.0
 	context.camera.release()
-	context.camera.snap_to(pose)
-	var backdrop := Placeholders.make("cutscene_" + cutscene_name, "box", Vector3(3.0, 0.2, 3.0), Palette.PROP.darkened(0.5))
+	context.camera.snap_to(CameraRig.cutscene_pose())
+	# Board-sized stage, top surface at y 0 like the Phase 1 board.
+	var backdrop := Placeholders.make("cutscene_" + cutscene_name, "box", Vector3(8.0, 0.2, 8.0), Palette.PROP.darkened(0.5))
 	backdrop.position = Vector3(4.0, -0.2, 4.0)
 	add_child(backdrop)
 	for prop in data["props"]:

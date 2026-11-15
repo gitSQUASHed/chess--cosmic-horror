@@ -14,7 +14,7 @@ Open tickets live in this folder. When a ticket is finished, move it to [`done/`
 - **Hand / Hands:** `Hand` is one hand and a simple command executor with at most one action at a time. `Hands` is the organiser: hand count, action queue, cooldowns, placement, and every coordination rule.
 - **Attack definitions** are data per action and level. Hands receive commands that reference a definition.
 - **Placeholders:** primitives with a floating name label. Hands red, king green, tiles and pillars white or gray.
-- **Camera and pixelation** are tunable runtime values (camera angle, Phase 2 rotation about 30 degrees, pixel size).
+- **Camera and pixelation** are tunable runtime values (camera angle, Phase 2 rotation of 45 degrees from the reference image, pixel size).
 
 ## Tickets
 
@@ -41,3 +41,4 @@ Open tickets live in this folder. When a ticket is finished, move it to [`done/`
 | [T-19](done/T-19-screen-effects.md) | Screen effects and pixelation presets | T-04, T-15 |
 | [T-20](done/T-20-real-model-integration.md) | Real model integration | all placeholder tickets |
 | [T-21](done/T-21-docs-and-project-map.md) | Docs and project map | all |
+| [T-22](T-22-phase2-reference-look.md) | Match Phase 2 to the reference image | T-19 |

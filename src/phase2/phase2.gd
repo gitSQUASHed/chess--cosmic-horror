@@ -5,8 +5,10 @@ extends Node3D
 
 signal finished(result: String)
 
-## Half size of the visible ground area, in camera-aligned metres (x across, y down the screen).
-const VIEW_HALF := Vector2(11.0, 8.0)
+## Visible ground area around the king, in camera-aligned metres (x across, y down the screen).
+## Asymmetric because of perspective: the far side (up the screen) reaches farther than the near
+## side. Derived from the Phase 2 camera pose in Constants; update both together.
+const VIEW_RECT := Rect2(-11.0, -17.0, 22.0, 25.5)
 
 var context: GameContext
 ## Highest threat value of all guiding hands, 0 to 1 (used by the screen effects).
@@ -120,39 +122,41 @@ func _place_swipe(command: HandCommand, king_position: Vector3, right: Vector3, 
 	var edge := rng.randi_range(0, 3)
 	var spot := Vector2.ZERO
 	var inward := Vector2.ZERO
+	var low := VIEW_RECT.position
+	var high := VIEW_RECT.end
 	match edge:
 		0:
-			spot = Vector2(-VIEW_HALF.x, rng.randf_range(-VIEW_HALF.y, VIEW_HALF.y))
+			spot = Vector2(low.x, rng.randf_range(low.y, high.y))
 			inward = Vector2.RIGHT
 		1:
-			spot = Vector2(VIEW_HALF.x, rng.randf_range(-VIEW_HALF.y, VIEW_HALF.y))
+			spot = Vector2(high.x, rng.randf_range(low.y, high.y))
 			inward = Vector2.LEFT
 		2:
-			spot = Vector2(rng.randf_range(-VIEW_HALF.x, VIEW_HALF.x), -VIEW_HALF.y)
+			spot = Vector2(rng.randf_range(low.x, high.x), low.y)
 			inward = Vector2.DOWN
 		_:
-			spot = Vector2(rng.randf_range(-VIEW_HALF.x, VIEW_HALF.x), VIEW_HALF.y)
+			spot = Vector2(rng.randf_range(low.x, high.x), high.y)
 			inward = Vector2.UP
 	var screen_dir := inward.rotated(rng.randf_range(-1.0, 1.0))
 	command.start = king_position + right * spot.x + down * spot.y
 	command.start.y = 0.0
 	command.direction = (right * screen_dir.x + down * screen_dir.y).normalized()
 	command.heading = atan2(command.direction.x, command.direction.z)
-	var travel := _exit_distance(spot, screen_dir, VIEW_HALF) + 2.0
+	var travel := _exit_distance(spot, screen_dir, VIEW_RECT) + 2.0
 	command.active_override = travel / AttackDefinition.SWIPE_SPEED
 	command.origin = command.start - command.direction * 2.0
 
 
-func _exit_distance(spot: Vector2, direction: Vector2, half: Vector2) -> float:
+func _exit_distance(spot: Vector2, direction: Vector2, view: Rect2) -> float:
 	var distance := INF
 	if direction.x > 0.001:
-		distance = minf(distance, (half.x - spot.x) / direction.x)
+		distance = minf(distance, (view.end.x - spot.x) / direction.x)
 	elif direction.x < -0.001:
-		distance = minf(distance, (-half.x - spot.x) / direction.x)
+		distance = minf(distance, (view.position.x - spot.x) / direction.x)
 	if direction.y > 0.001:
-		distance = minf(distance, (half.y - spot.y) / direction.y)
+		distance = minf(distance, (view.end.y - spot.y) / direction.y)
 	elif direction.y < -0.001:
-		distance = minf(distance, (-half.y - spot.y) / direction.y)
+		distance = minf(distance, (view.position.y - spot.y) / direction.y)
 	return maxf(distance, 1.0) if distance != INF else 1.0
 
 

@@ -13,7 +13,9 @@ const WALL := Color("a8a8ff")
 const PROP := Color("b8b8b8")
 const VOID_BLACK := Color("050a07")
 
-const SCREEN_DARK := Color("050a07")
-const SCREEN_DEEP := Color("14301c")
-const SCREEN_MID := Color("2f6b3f")
-const SCREEN_LIGHT := Color("b6e8bd")
+## Screen palette ramps (void, deep, mid, light) for the shader's palette mapping, set per
+## phase by ScreenEffects. Phase 1 keeps a wide ramp so the board, clock and silhouettes stay
+## distinct. Phase 2 follows docs/plan/style/reference/phase2_target.png: a lifted gray void
+## and desaturated greens, brightened for legibility.
+const SCREEN_PHASE_ONE: Array[Color] = [Color("171a17"), Color("2b362e"), Color("546b57"), Color("c7e6bd")]
+const SCREEN_PHASE_TWO: Array[Color] = [Color("262826"), Color("3d443d"), Color("617061"), Color("d1e3c2")]

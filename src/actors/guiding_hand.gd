@@ -11,7 +11,7 @@ const MAX_TURN_RATE := 1.35
 ## Distance at which the threat value reaches 1.
 const THREAT_NEAR := 1.5
 ## Distance at which the threat value reaches 0.
-const THREAT_FAR := 25.0
+const THREAT_FAR := 20.0
 
 var target: Node3D
 var speed := 0.0
@@ -43,10 +43,13 @@ func setup(chase_target: Node3D, start: Vector3) -> void:
 		heading = to_target.normalized()
 
 
-## 0 (far) to 1 (touching distance).
+## 0 (far) to 1 (touching distance). Squared, so a hand at the edge of the island (about
+## 10 tiles away, as in the reference image) is only a mild threat and the response
+## ramps up steeply as it closes in.
 func threat(from_position: Vector3) -> float:
 	var distance := from_position.distance_to(global_position)
-	return clampf(1.0 - (distance - THREAT_NEAR) / (THREAT_FAR - THREAT_NEAR), 0.0, 1.0)
+	var linear := clampf(1.0 - (distance - THREAT_NEAR) / (THREAT_FAR - THREAT_NEAR), 0.0, 1.0)
+	return linear * linear
 
 
 func _physics_process(delta: float) -> void:

@@ -23,10 +23,12 @@ Transitions between these moments are authored as camera, pixel-size, and effect
 
 ## Phase 2 treatment
 
-- Strong dark vignette to limit visible space.
-- Constant static/grain, stronger than in Phase 1, rising with the guiding-hand threat.
-- Pronounced fisheye distortion that bends the whole view toward the centre. It must still leave tile edges readable enough to navigate.
-- Deep black/green void beyond the visible pillar radius.
+- Its own palette ramp (see [colours](colors.md)), swapped in when the phase starts.
+- Visible film grain, stronger than in Phase 1 but never hiding the tiles. Its spread is proportional to brightness, so lit tiles are noisier than the void. It rises with the guiding-hand threat.
+- Faint TV static at calm that grows with the threat.
+- Almost no vignette at calm. It is applied before the palette mapping, so it can only darken the scene toward the void colour, and it closes in as the threat rises.
+- Subtle fisheye at calm (0.12) that grows with the threat. Tile edges must stay readable enough to navigate.
+- A lifted gray void beyond the visible pillar radius.
 - Pillars can use subdued per-instance colour variation around one base green.
 - Rising terrain emerges from blackness; removed pillars descend, darken, and vanish into the void.
 
@@ -36,8 +38,10 @@ The permanent guiding hand provides the Phase 2 danger feedback instead of a HUD
 
 | Proximity | Visual response |
 |---|---|
-| Distant | Base darkness, low static, almost no distortion |
+| Distant | The reference image: base grain, faint static, almost no vignette or distortion |
 | Nearing | More white illumination, denser static, a low shake, stronger rumble |
 | Immediate danger | Substantial white bloom, intense static, noticeable shake, severe pressure |
+
+The threat value falls off with the square of the distance (`GuidingHand.threat`), so a hand at the island's edge, about ten tiles away, is still a mild threat. The calm and threat strengths live in `src/fx/screen_effects.gd`.
 
 The white effect must not fully blind the player; at maximum pressure the player still needs enough local contrast to make an evasive decision. The response is the king's perception of an immense entity approaching, not a generic warning overlay.
