@@ -5,7 +5,7 @@
 - Phase 2 camera: yaw 45, tilt 32, fov 25, distance 31 (`Constants`), and the asymmetric `Phase2.VIEW_RECT_TILES` for swipe spawns re-derived from it.
 - Phase 2 tiles are 2 m (`Constants.PHASE2_TILE_SIZE`). Pillars, attack footprints, camera distance, king and hand speeds, and threat distances scale with it; the king model does not.
 - Pillar reveal radius 8. Models are the same in both phases.
-- Per-phase palette ramps; Phase 2 gets a lifted, desaturated ramp. Brightness-proportional grain, vignette before the palette mapping, calm vignette and fisheye almost off, threat curve squared.
+- Per-phase palette ramps; Phase 2 gets a lifted, desaturated ramp. Brightness-proportional grain, vignette before the palette mapping, calm vignette almost off, strong calm fisheye (0.75), threat curve squared.
 - Cutscenes use the Phase 1 lens from a low angle with a board-sized backdrop, so the silhouettes are in frame.
 - Hands emit near-white light and the king a faint self-light so both map brighter than the tiles.
 

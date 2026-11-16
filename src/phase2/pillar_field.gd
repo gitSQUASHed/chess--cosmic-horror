@@ -144,6 +144,11 @@ func is_removed(tile: Vector2i) -> bool:
 	return _removed.has(tile)
 
 
+## True if a revealed, standing pillar is at `tile`.
+func has_pillar(tile: Vector2i) -> bool:
+	return _pillars.has(tile)
+
+
 func pillar_count() -> int:
 	return _pillars.size()
 
@@ -206,7 +211,8 @@ func _build_void_area() -> void:
 	var shape := BoxShape3D.new()
 	shape.size = Vector3(4000.0, 2.0, 4000.0)
 	shape_node.shape = shape
-	area.position = Vector3(0.0, -8.0, 0.0)
+	# Deep enough that a falling king stays visible for about a second as he sinks into the mist.
+	area.position = Vector3(0.0, -16.0, 0.0)
 	area.add_child(shape_node)
 	area.body_entered.connect(func(body: Node3D) -> void: void_entered.emit(body))
 	add_child(area)

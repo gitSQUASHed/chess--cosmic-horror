@@ -5,8 +5,8 @@ extends RefCounted
 const BOARD_TILES := 8
 const PHASE_ONE_SECONDS := 120.0
 const PHASE_TWO_ENDURANCE_SECONDS := 600.0
-## The planned long-run target is about 500 tiles; kept short so a full run is testable.
-const PHASE_TWO_ESCAPE_TILES := 60
+## Tiles from the start to the escape edge (the planned long-run target).
+const PHASE_TWO_ESCAPE_TILES := 500
 ## Seconds between a hand appearing (or its shadow / marked tile) and its attack. Never shorter,
 ## and it does not shrink over time; attacks get faster through Hands.speed_scale instead.
 const MIN_TELEGRAPH := 1.0
@@ -30,8 +30,8 @@ const PHASE2_TILT_DEG := 32.0
 ## Phase 2 vertical field of view. Narrow, so the view is close to isometric with only mild
 ## perspective.
 const PHASE2_FOV_DEG := 25.0
-## Phase 2 camera distance. With the fov above, about 12 tiles of ground fill the screen height
-## after the calm fisheye magnification.
-const PHASE2_DISTANCE := 31.0 * PHASE2_TILE_SIZE
+## Phase 2 camera distance. Pulled back so the island still fits under the strong calm fisheye,
+## which magnifies the centre and squeezes the edges.
+const PHASE2_DISTANCE := 36.0 * PHASE2_TILE_SIZE
 ## Pillars farther than this from the king sink into the void; closer ones rise out of it.
 const PILLAR_REVEAL_RADIUS := 8

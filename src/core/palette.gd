@@ -6,7 +6,8 @@ extends RefCounted
 const HAND := Color("d93a3a")
 const KING_WHITE_SIDE := Color("7be08a")
 const KING_BLACK_SIDE := Color("1f7a36")
-const TILE_LIGHT := Color("e8e8e8")
+## Light squares are kept below white so hands and outlines stay the brightest things on the board.
+const TILE_LIGHT := Color("bdbdbd")
 const TILE_DARK := Color("8c8c8c")
 const PILLAR := Color("c4c4c4")
 const WALL := Color("a8a8ff")

@@ -50,7 +50,6 @@ func try_move(direction: Vector2i) -> bool:
 		return false
 	tile = target
 	is_moving = true
-	Placeholders.set_subtitle(_visual, _direction_name(direction))
 	ModelAnimator.play(_visual, "move")
 	if _tween != null and _tween.is_valid():
 		_tween.kill()
@@ -87,11 +86,3 @@ func _on_area_entered(_area: Area3D) -> void:
 		dead = true
 		captured.emit()
 
-
-func _direction_name(direction: Vector2i) -> String:
-	var names := {
-		Vector2i(0, -1): "up", Vector2i(1, -1): "up-right", Vector2i(1, 0): "right",
-		Vector2i(1, 1): "down-right", Vector2i(0, 1): "down", Vector2i(-1, 1): "down-left",
-		Vector2i(-1, 0): "left", Vector2i(-1, -1): "up-left",
-	}
-	return String(names.get(direction, ""))

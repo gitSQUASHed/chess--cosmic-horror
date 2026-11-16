@@ -25,7 +25,8 @@ func setup(rng: RandomNumberGenerator) -> void:
 
 ## World positions the hands emerge from, one per silhouette.
 func origins() -> Array[Vector3]:
-	return [Vector3(1.5, 0.0, -5.0), Vector3(6.5, 0.0, -5.0)]
+	# Close behind the board so their lower bodies show at the top of the Phase 1 frame.
+	return [Vector3(1.5, 0.0, -3.0), Vector3(6.5, 0.0, -3.0)]
 
 
 func _ready() -> void:
@@ -42,7 +43,8 @@ func _ready() -> void:
 		speech.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 		speech.no_depth_test = true
 		speech.outline_size = 10
-		speech.position = positions[index] + Vector3(0.0, 6.2, 0.0)
+		# In front of the visible lower body, inside the frame.
+		speech.position = positions[index] + Vector3(0.0, 0.8, 1.4)
 		speech.visible = false
 		add_child(speech)
 		_speech.append(speech)

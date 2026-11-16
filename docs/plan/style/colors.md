@@ -9,7 +9,7 @@ Use a restricted, heavily desaturated retro-green palette. Contrast relationship
 | Phase 1 | `#171a17` | `#2b362e` | `#546b57` | `#c7e6bd` |
 | Phase 2 | `#262826` | `#3d443d` | `#617061` | `#d1e3c2` |
 
-Phase 1 keeps a wide ramp so the board squares, clock and silhouettes stay distinct. Phase 2 takes the reference's lifted gray void and desaturated greens, but its tiles are brighter than the reference so the field stays readable.
+Phase 1 keeps a wide ramp so the board squares, clock and silhouettes stay distinct. Light squares are a light gray rather than white, so hands and outlines stay the brightest things on the board. Phase 2 takes the reference's lifted gray void and desaturated greens, but its tiles are brighter than the reference so the field stays readable.
 
 | Role | Intended value | Use |
 |---|---|---|

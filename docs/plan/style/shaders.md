@@ -27,9 +27,9 @@ Transitions between these moments are authored as camera, pixel-size, and effect
 - Visible film grain, stronger than in Phase 1 but never hiding the tiles. Its spread is proportional to brightness, so lit tiles are noisier than the void. It rises with the guiding-hand threat.
 - Faint TV static at calm that grows with the threat.
 - Almost no vignette at calm. It is applied before the palette mapping, so it can only darken the scene toward the void colour, and it closes in as the threat rises.
-- Subtle fisheye at calm (0.12) that grows with the threat. Tile edges must stay readable enough to navigate.
+- Strong fisheye at calm (0.75): centre tiles look about twice as big as tiles at the edge of the revealed island. It grows with the threat. Tile edges must stay readable enough to navigate.
 - A lifted gray void beyond the visible pillar radius.
-- Dark depth mist below the pillar tops: pillar sides fade into the void colour toward their base, which separates neighbouring pillars and makes the tiles easier to read. It is height fog on the shared environment, enabled only during Phase 2 (`Phase2.MIST_DENSITY`).
+- Dark depth mist below the pillar tops: pillar sides fade into the void colour toward their base, so holes read as dark gaps and neighbouring pillars separate. A king falling into a hole visibly sinks into it before the screen fades. It is height fog on the shared environment, enabled only during Phase 2 (`Phase2.MIST_DENSITY`).
 - Pillars can use subdued per-instance colour variation around one base green.
 - Rising terrain emerges from blackness; removed pillars descend, darken, and vanish into the void.
 

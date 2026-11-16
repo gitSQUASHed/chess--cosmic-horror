@@ -5,7 +5,7 @@
 - The playable space is a finite 8×8 board of clear light and dark squares.
 - It uses an angled top-down view; board edges are solid.
 - Temporary hand-created walls occupy board squares and block the king.
-- A faint chess clock appears on one board side. That side encodes the eventual Phase 2 escape direction without an explicit objective marker.
+- A faint chess clock stands behind the board, shifted toward one side. That side encodes the eventual Phase 2 escape direction without an explicit objective marker.
 - At the end of Phase 1, the board collapses and transitions the king into Phase 2.
 
 ## Phase 2 — Pillar field and void
@@ -19,6 +19,6 @@
 
 ## Escape space
 
-- The correct escape direction is the horizontal side indicated by the Phase 1 chess clock.
+- The correct escape direction is the horizontal side the Phase 1 chess clock is shifted toward.
 - The final product targets an escape edge roughly 500 tiles away; its exact distance remains a balance parameter.
 - The field must provide risky but possible routes to that edge rather than an explicit route marker.

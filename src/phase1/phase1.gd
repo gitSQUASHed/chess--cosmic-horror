@@ -25,8 +25,8 @@ func _ready() -> void:
 	_build_board()
 	_build_edges()
 	_clock = Placeholders.clock()
-	var clock_x := -1.8 if context.run_config.escape_side < 0 else Constants.BOARD_TILES + 1.8
-	_clock.position = Vector3(clock_x, 0.0, 3.5)
+	# Behind the board between the players, shifted toward the side of the good ending.
+	_clock.position = Vector3(Constants.BOARD_TILES * 0.5 + 1.5 * context.run_config.escape_side, 0.0, -0.8)
 	add_child(_clock)
 	_king = Phase1King.new()
 	_king.setup(context.run_config.king_is_white)
@@ -52,7 +52,7 @@ func _process(delta: float) -> void:
 	_director.tick(delta)
 	_hands.tick(delta)
 	_king.try_move(_grid_input())
-	Placeholders.set_subtitle(_clock, _format_time(Constants.PHASE_ONE_SECONDS - _director.elapsed))
+	Placeholders.set_clock_time(_clock, _format_time(Constants.PHASE_ONE_SECONDS - _director.elapsed))
 	_debug_label.text = "DEBUG phase 1  t=%s  hands=%d  queue=%d  attack level=%d\nWASD/arrows move | F3 +30s | F10 hide | R restart | [ ] pixel size | F2 phase 2" % [
 		_format_time(_director.elapsed), _hands.hand_count(), _hands.queue_size(), _director.attack_level()]
 
@@ -76,14 +76,6 @@ func _build_board() -> void:
 			var tile := Placeholders.tile((x + z) % 2 == 0)
 			tile.position = Vector3(x + 0.5, -0.1, z + 0.5)
 			board.add_child(tile)
-	var label := Label3D.new()
-	label.text = "board (tile_light / tile_dark)"
-	label.font_size = 32
-	label.pixel_size = 0.008
-	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	label.no_depth_test = true
-	label.position = Vector3(4.0, 0.3, Constants.BOARD_TILES + 0.8)
-	board.add_child(label)
 
 
 ## Invisible edge bodies on the wall layer so a physics query blocks moves off the board.

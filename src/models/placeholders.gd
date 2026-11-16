@@ -1,7 +1,6 @@
 class_name Placeholders
 extends RefCounted
-## Single factory for every model. Today it builds coloured primitives with a floating name
-## label. Real models replace them here (see try_real_model) without touching gameplay code.
+## Single factory for every model. Today it builds coloured primitives (no name labels). Real models replace them here (see try_real_model) without touching gameplay code.
 ## Hands are red, the king is green, tiles and pillars are white/gray.
 
 const MODEL_DIR := "res://src/assets/models/"
@@ -11,7 +10,7 @@ const OUTLINE_WIDTH_FIELD := 0.12
 
 
 ## Builds a placeholder (or the real model, if present) for `placeholder_name`.
-static func make(placeholder_name: String, shape: String, size: Vector3, colour: Color, with_label: bool = true) -> Node3D:
+static func make(placeholder_name: String, shape: String, size: Vector3, colour: Color) -> Node3D:
 	var real := try_real_model(placeholder_name)
 	if real != null:
 		return real
@@ -41,18 +40,6 @@ static func make(placeholder_name: String, shape: String, size: Vector3, colour:
 	body.material_override = material
 	body.position.y = size.y * 0.5
 	root.add_child(body)
-	if not with_label:
-		return root
-	var label := Label3D.new()
-	label.name = "Label"
-	label.text = placeholder_name
-	label.font_size = 32
-	label.pixel_size = 0.008
-	label.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-	label.no_depth_test = true
-	label.outline_size = 8
-	label.position.y = size.y + 0.25
-	root.add_child(label)
 	return root
 
 
@@ -67,14 +54,6 @@ static func try_real_model(placeholder_name: String) -> Node3D:
 				if instance != null:
 					return instance
 	return null
-
-
-static func set_subtitle(model: Node3D, subtitle: String) -> void:
-	var label := model.get_node_or_null("Label") as Label3D
-	if label != null:
-		var base := String(model.get_meta("base_name", label.text.get_slice("\n", 0)))
-		model.set_meta("base_name", base)
-		label.text = base if subtitle == "" else base + "\n" + subtitle
 
 
 static func set_brightness(model: Node3D, brightness: float) -> void:
@@ -219,13 +198,13 @@ static func guiding_hand() -> Node3D:
 
 
 static func tile(is_light: bool) -> Node3D:
-	return make("tile_light" if is_light else "tile_dark", "box", Vector3(0.98, 0.2, 0.98), Palette.TILE_LIGHT if is_light else Palette.TILE_DARK, false)
+	return make("tile_light" if is_light else "tile_dark", "box", Vector3(0.98, 0.2, 0.98), Palette.TILE_LIGHT if is_light else Palette.TILE_DARK)
 
 
 ## A cube-like pillar: `width` is the tile size in metres (a small gap leaves visible seams),
 ## `height` its full height so its top lines up with the collision box.
 static func pillar(width: float = 1.0, height: float = 1.0) -> Node3D:
-	return make("pillar", "box", Vector3(width * 0.94, height, width * 0.94), Palette.PILLAR, false)
+	return make("pillar", "box", Vector3(width * 0.94, height, width * 0.94), Palette.PILLAR)
 
 
 static func wall_segment() -> Node3D:
@@ -233,7 +212,23 @@ static func wall_segment() -> Node3D:
 
 
 static func clock() -> Node3D:
-	return make("clock", "box", Vector3(0.6, 2.0, 1.6), Palette.PROP)
+	var model := make("clock", "box", Vector3(1.6, 2.0, 0.6), Palette.PROP)
+	# The clock's time readout: large digits so they survive the pixelation.
+	var face := Label3D.new()
+	face.name = "Time"
+	face.font_size = 72
+	face.pixel_size = 0.008
+	face.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	face.outline_size = 12
+	face.position = Vector3(0.0, 1.2, 0.35)
+	model.add_child(face)
+	return model
+
+
+static func set_clock_time(model: Node3D, text: String) -> void:
+	var face := model.get_node_or_null("Time") as Label3D
+	if face != null:
+		face.text = text
 
 
 static func silhouette(side: String) -> Node3D:

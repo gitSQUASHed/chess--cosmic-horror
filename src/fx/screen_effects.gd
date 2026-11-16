@@ -65,7 +65,9 @@ func _process(delta: float) -> void:
 			target_vignette = 0.1 + 0.4 * _threat
 			target_grain = 0.16 + 0.3 * _threat
 			target_static = 0.05 + 0.4 * _threat
-			target_fisheye = 0.12 + 0.2 * _threat
+			# Strong barrel: tiles at the centre look about twice as big as those at the edge of
+			# the revealed island.
+			target_fisheye = 0.75 + 0.2 * _threat
 			target_bloom = BLOOM_MAX * _threat * _threat
 			target_boost = Presets.THREAT_BOOST * _threat
 			if _threat > 0.35:

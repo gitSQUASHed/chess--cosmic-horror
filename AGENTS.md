@@ -28,7 +28,7 @@ Godot 4 (3D) cosmic-horror survival game: a chess king survives hands that clear
 - **Hand vs Hands:** `Hand` runs one `HandCommand` at a time and has no scheduling logic. `Hands` owns the hand count, action queue, cooldowns, placement, and every coordination rule. Directors (`Phase1Director`, `Phase2Director`) decide what to request.
 - **Attack data** lives only in `AttackCatalogue`. Sizes and timings are not hard-coded elsewhere.
 - **Physics drives logic.** Use the layers in `Layers`. Danger volumes are Area3D on `HAND_DANGER`, walls are bodies on `WALL`, pillars on `PILLAR`.
-- **All models come from `Placeholders`.** Never build meshes in gameplay code. Placeholders: hands red, king green, tiles and pillars white or gray, each with its name as a floating label.
+- **All models come from `Placeholders`.** Never build meshes in gameplay code. Placeholders: hands red, king green, tiles and pillars white or gray. No name labels; the only in-world text is the clock's time and the background dialogue.
 - **Camera and pixel size are runtime values** (`CameraRig`, `PixelationLayer`, `Presets`). Do not hard-code angles outside `CameraRig` and `Constants`.
 - State changes go through `GameFlow.change_state`.
 

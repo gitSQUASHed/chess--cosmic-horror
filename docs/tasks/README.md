@@ -43,3 +43,4 @@ Open tickets live in this folder. When a ticket is finished, move it to [`done/`
 | [T-21](done/T-21-docs-and-project-map.md) | Docs and project map | all |
 | [T-22](T-22-phase2-reference-look.md) | Match Phase 2 to the reference image | T-19 |
 | [T-23](T-23-attack-warnings.md) | Attack warnings and grounded hands | T-22 |
+| [T-24](T-24-playtest-round-2.md) | Playtest round 2 fixes | T-23 |

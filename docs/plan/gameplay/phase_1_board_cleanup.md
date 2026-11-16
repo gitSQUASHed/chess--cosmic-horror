@@ -15,7 +15,7 @@ Survive for two minutes as the players try to clear the chessboard.
 
 The board is seen from a clean, angled top-down view, not rotated. Behind it are two large, dark chess-player silhouettes. They only use restrained idle animation: breathing, posture changes, head turns, or a small arm movement.
 
-A large, faint two-minute chess clock sits subtly to one side of the board. It is readable if the player looks for it but is not a conventional HUD. Its side secretly records the escape direction for Phase 2. The game does not explain this connection.
+A large, faint two-minute chess clock stands behind the board, between the two players, shifted slightly toward one side. It is readable if the player looks for it but is not a conventional HUD. The side it leans toward secretly records the escape direction for Phase 2. The game does not explain this connection.
 
 The silhouettes occasionally speak short, mundane lines. They establish that the silhouettes are living people and that the king is hearing the conversation around his world. Examples are intentionally placeholders:
 

@@ -6,8 +6,11 @@ extends Node3D
 signal finished(result: String)
 
 ## Depth mist: how quickly everything below the pillar tops fades into the void colour (per
-## metre). About 0.86 at the base of a 2 m pillar, so pillar sides darken toward the void.
-const MIST_DENSITY := 1.0
+## metre). Pillar sides sink into darkness (about 0.96 at the base of a 2 m pillar), so holes
+## read as dark gaps.
+const MIST_DENSITY := 1.6
+## The mist starts just below the pillar tops so their top edges stay lit.
+const MIST_TOP := -0.05
 
 ## Metres per Phase 2 tile.
 const TILE := Constants.PHASE2_TILE_SIZE
@@ -26,6 +29,7 @@ var _hands: Hands
 var _director := Phase2Director.new()
 var _guiding: Array[GuidingHand] = []
 var _ended := false
+var _falling := false
 var _debug_label: Label
 
 
@@ -79,7 +83,7 @@ func _set_depth_mist(enabled: bool) -> void:
 	environment.fog_light_color = Palette.VOID_BLACK
 	environment.fog_light_energy = 1.0
 	environment.fog_density = 0.0
-	environment.fog_height = PillarField.SURFACE_Y
+	environment.fog_height = PillarField.SURFACE_Y + MIST_TOP
 	environment.fog_height_density = MIST_DENSITY
 	environment.fog_sky_affect = 0.0
 	environment.fog_aerial_perspective = 0.0
@@ -91,6 +95,10 @@ func _process(delta: float) -> void:
 	_director.tick(delta)
 	_hands.tick(delta)
 	_field.update_around(_king.global_position)
+	# Falling into a hole: the camera stays at the surface so the king visibly drops into the mist.
+	if not _falling and _king.global_position.y < PillarField.SURFACE_Y - 0.5:
+		_falling = true
+		context.camera.release()
 	while _guiding.size() < _director.guiding_hands_wanted():
 		_spawn_guiding_hand()
 	threat = 0.0
@@ -172,12 +180,25 @@ func _place_swipe(command: HandCommand, king_position: Vector3, right: Vector3, 
 			spot = Vector2(rng.randf_range(low.x, high.x), high.y)
 			inward = Vector2.UP
 	var screen_dir := inward.rotated(rng.randf_range(-1.0, 1.0))
+	spot = _first_solid_spot(king_position, right, down, spot, screen_dir)
 	command.start = king_position + (right * spot.x + down * spot.y) * TILE
 	command.start.y = 0.0
 	command.direction = (right * screen_dir.x + down * screen_dir.y).normalized()
 	command.heading = atan2(command.direction.x, command.direction.z)
 	var travel := _exit_distance(spot, screen_dir, VIEW_RECT_TILES) + 2.0
 	command.active_override = travel / AttackDefinition.SWIPE_SPEED
+
+
+## Moves a swipe start inward along its path until it stands on a revealed pillar, so the
+## hand starts on the field instead of over the void. Keeps `spot` if no pillar is found.
+func _first_solid_spot(king_position: Vector3, right: Vector3, down: Vector3, spot: Vector2, direction: Vector2) -> Vector2:
+	var probe := spot
+	for step in range(60):
+		var world := king_position + (right * probe.x + down * probe.y) * TILE
+		if _field.has_pillar(PillarField.world_to_tile(world)):
+			return probe
+		probe += direction * 0.5
+	return spot
 
 
 func _exit_distance(spot: Vector2, direction: Vector2, view: Rect2) -> float:
