@@ -6,7 +6,7 @@ extends Node3D
 ##
 ## Hands stand directly on the field. During the telegraph a ground hand (sweep, swipe, wall)
 ## already stands where it will act; a top-down hand (grab, punch) stays hidden and only its
-## shadow marks where it lands. It then falls from above the top of the screen (DROPPING) and
+## outlined shadow marks where it lands; shadow and outline vanish when it lands. It then falls from above the top of the screen (DROPPING) and
 ## the attack starts when it lands. There are no other warnings.
 ##
 ## Physics: while ACTIVE, a damaging action enables an Area3D on the hand_danger layer and a
@@ -149,7 +149,7 @@ func _build_nodes() -> void:
 		Placeholders.add_outline(_visual, outline_width)
 		add_child(_visual)
 	if definition.from_above:
-		_shadow = Placeholders.shadow(Vector2(volume.x, volume.z))
+		_shadow = Placeholders.shadow(Vector2(volume.x, volume.z), outline_width)
 		add_child(_shadow)
 	if not definition.damages and not definition.blocks_movement:
 		return

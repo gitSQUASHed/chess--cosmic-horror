@@ -19,7 +19,7 @@ The king briefly acknowledges the change: he feels no longer bound to chess rule
 ## Player movement
 
 - Movement is free and fast rather than tile-clipped.
-- Everything moves twice as fast as the base speed: the king, the guiding hands and the attacks. Only the one-second attack telegraph stays the same.
+- The hands (attacks and guiding hands) move twice as fast as the base speed; the king only 1.2 times. Only the one-second attack telegraph stays the same.
 - The king can jump small gaps. The jump keeps the current direction and speed, so it can also carry the king into a hole. See [movement](movement.md) for the full rule set.
 - Falling into a hole ends the run with the void ending.
 

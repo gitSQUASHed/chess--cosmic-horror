@@ -6,11 +6,11 @@ extends CharacterBody3D
 
 signal captured
 
-## Walking speed scales with the tile size (same tiles per second as before) and with the
-## Phase 2 speed multiplier.
-const WALK_SPEED := 5.0 * Constants.PHASE2_TILE_SIZE * Constants.PHASE2_SPEED_MULTIPLIER
+## Base walking speed: 5 tiles per second. Guiding hands derive their speed from it.
+const BASE_WALK_SPEED := 5.0 * Constants.PHASE2_TILE_SIZE
+const WALK_SPEED := BASE_WALK_SPEED * Constants.PHASE2_KING_SPEED_MULTIPLIER
 ## Vertical take-off speed and gravity: a low, quick hop of about a third of a second that
-## covers roughly three tiles at walking speed.
+## covers roughly two tiles at walking speed.
 const JUMP_VELOCITY := 5.0
 const GRAVITY := 30.0
 

@@ -68,7 +68,7 @@ func _apply_schedule() -> void:
 	_hands.action_cooldown = _action_interval()
 	# Attacks run at the Phase 2 speed multiplier and speed up a further 1.5x over 7.5 minutes;
 	# the telegraph stays fixed.
-	_hands.speed_scale = Constants.PHASE2_SPEED_MULTIPLIER * (1.0 + minf(elapsed / 450.0, 1.0) * 0.5)
+	_hands.speed_scale = Constants.PHASE2_HAND_SPEED_MULTIPLIER * (1.0 + minf(elapsed / 450.0, 1.0) * 0.5)
 
 
 func _action_interval() -> float:

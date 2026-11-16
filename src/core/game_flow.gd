@@ -47,6 +47,7 @@ func _build_stage() -> void:
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	environment.ambient_light_color = Color(0.6, 0.6, 0.6)
 	environment.ambient_light_energy = 0.45
+	context.environment = environment
 	var world_environment := WorldEnvironment.new()
 	world_environment.environment = environment
 	add_child(world_environment)

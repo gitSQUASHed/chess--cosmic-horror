@@ -8,7 +8,7 @@ This document defines the product enemy vocabulary. Exact values are balancing p
 - A hand owns at most one action at a time. It cannot begin a second action until its current action ends.
 - Hands may act concurrently. Planned coordination may combine at most three hands in one deliberate setup.
 - A hand's action cooldown decreases as its phase progresses and never drops below zero.
-- Every action except the guiding missile hand has a telegraph of at least one second between the warning appearing and the attack. The telegraph never shrinks; instead, the attacks themselves get faster as the phase progresses (movement, strikes and recovery; walls keep their blocking time).
+- Every action except the guiding missile hand has a telegraph of at least one second between the warning appearing and the attack. The telegraph never shrinks; instead, the attacks themselves get faster as the phase progresses (movement, the fall of top-down hands, strikes and recovery; walls keep their blocking time). Phase 1 attacks start slow (0.6 times the base speed) and reach 1.4 times by its end.
 - In Phase 2, simultaneous action centres may not occupy the same tile. Their effect areas may overlap.
 - A wall can only be placed while at least one other hand is performing a non-wall action.
 
@@ -29,7 +29,7 @@ These are the only warnings. There are no ground markers, labels or glow changes
 
 - Hands stand directly on the field, never floating above it.
 - **Ground hands** (side sweep, flat swipe, wall) appear on the field where they will act, wait for the telegraph, then act.
-- **Top-down hands** (grab, punch) are not on screen before the attack. During the telegraph only their shadow shows on the field where they will land; then the hand falls from above the top of the screen onto the shadow, and the attack takes effect when it lands.
+- **Top-down hands** (grab, punch) are not on screen before the attack. During the telegraph only their shadow, framed by a white outline, shows on the field where they will land; then the hand falls from above the top of the screen onto the shadow. Shadow and outline stay until the hand lands, and the attack takes effect at that moment.
 - **Void removal** has no visible hand. The pillars it will remove go completely dark with an outline for one second, then are pulled down; the outline disappears as they go.
 - In both phases the king and every hand, including guiding hands and the capturing hand, have a solid white outline that light and shadow do not affect.
 

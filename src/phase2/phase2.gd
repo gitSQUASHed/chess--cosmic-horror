@@ -5,6 +5,10 @@ extends Node3D
 
 signal finished(result: String)
 
+## Depth mist: how quickly everything below the pillar tops fades into the void colour (per
+## metre). About 0.86 at the base of a 2 m pillar, so pillar sides darken toward the void.
+const MIST_DENSITY := 1.0
+
 ## Metres per Phase 2 tile.
 const TILE := Constants.PHASE2_TILE_SIZE
 ## Visible ground area around the king, in camera-aligned tiles (x across, y down the screen).
@@ -30,6 +34,7 @@ func setup(game_context: GameContext) -> void:
 
 
 func _ready() -> void:
+	_set_depth_mist(true)
 	var start := PillarField.tile_to_world(Vector2i.ZERO) + Vector3(0.0, 8.0, 0.0)
 	context.camera.release()
 	context.camera.snap_to(CameraRig.phase_two_pose(PillarField.tile_to_world(Vector2i.ZERO)))
@@ -58,6 +63,26 @@ func _ready() -> void:
 	context.pixelation.set_fade(1.0)
 	context.pixelation.animate_fade(0.0, 1.2)
 	_build_debug_label()
+
+
+func _exit_tree() -> void:
+	_set_depth_mist(false)
+
+
+## Height fog below the pillar surface, in the void colour. Nothing above the surface (king,
+## hands) is affected.
+func _set_depth_mist(enabled: bool) -> void:
+	var environment := context.environment
+	if environment == null:
+		return
+	environment.fog_enabled = enabled
+	environment.fog_light_color = Palette.VOID_BLACK
+	environment.fog_light_energy = 1.0
+	environment.fog_density = 0.0
+	environment.fog_height = PillarField.SURFACE_Y
+	environment.fog_height_density = MIST_DENSITY
+	environment.fog_sky_affect = 0.0
+	environment.fog_aerial_perspective = 0.0
 
 
 func _process(delta: float) -> void:

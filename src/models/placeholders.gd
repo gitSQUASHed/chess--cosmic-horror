@@ -145,8 +145,9 @@ static func _collect_meshes(node: Node, result: Array[MeshInstance3D]) -> void:
 		_collect_meshes(child, result)
 
 
-## Flat dark patch on the ground where a top-down hand will land. `size` is (x, z) in metres.
-static func shadow(size: Vector2) -> MeshInstance3D:
+## Flat dark patch on the ground where a top-down hand will land, framed by a solid white
+## outline of `outline_width`. `size` is (x, z) in metres.
+static func shadow(size: Vector2, outline_width: float = OUTLINE_WIDTH_BOARD) -> MeshInstance3D:
 	var plane := PlaneMesh.new()
 	plane.size = size
 	var material := StandardMaterial3D.new()
@@ -159,6 +160,28 @@ static func shadow(size: Vector2) -> MeshInstance3D:
 	patch.material_override = material
 	patch.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	patch.position.y = 0.02
+	var frame_material := StandardMaterial3D.new()
+	frame_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	frame_material.albedo_color = Color.WHITE
+	var half := size * 0.5
+	var w := outline_width
+	# Four strips around the patch: (centre x, centre z, length x, length z).
+	var strips := [
+		[0.0, -half.y - w * 0.5, size.x + 2.0 * w, w],
+		[0.0, half.y + w * 0.5, size.x + 2.0 * w, w],
+		[-half.x - w * 0.5, 0.0, w, size.y],
+		[half.x + w * 0.5, 0.0, w, size.y],
+	]
+	for strip in strips:
+		var box := BoxMesh.new()
+		box.size = Vector3(strip[2], 0.01, strip[3])
+		var piece := MeshInstance3D.new()
+		piece.name = "Outline"
+		piece.mesh = box
+		piece.material_override = frame_material
+		piece.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		piece.position = Vector3(strip[0], 0.0, strip[1])
+		patch.add_child(piece)
 	return patch
 
 

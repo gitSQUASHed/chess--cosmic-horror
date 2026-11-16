@@ -16,9 +16,11 @@ const KING_START_TILE := Vector2i(3, 4)
 ## to stay on, and the unchanged king looks tiny against it. Attack sizes stay in tiles, and
 ## Phase 2 speeds and distances scale with this value so timing per tile stays the same.
 const PHASE2_TILE_SIZE := 2.0
-## Everything in Phase 2 moves this much faster (king, guiding hands, attacks) to make it more
-## hectic. The 1 s attack telegraph is not affected.
-const PHASE2_SPEED_MULTIPLIER := 2.0
+## Phase 2 hands (attacks and guiding hands) move this much faster than the base speed, to make
+## it hectic. The 1 s attack telegraph is not affected.
+const PHASE2_HAND_SPEED_MULTIPLIER := 2.0
+## The king speeds up less than the hands, so they outpace him.
+const PHASE2_KING_SPEED_MULTIPLIER := 1.2
 ## Phase 2 camera rotation around the vertical axis. 45 makes tiles read as symmetric diamonds,
 ## as in docs/plan/style/reference/phase2_target.png.
 const PHASE2_YAW_DEG := 45.0
