@@ -1,12 +1,13 @@
 class_name AttackDefinition
 extends Resource
 ## Rules for one attack kind at one level, as data. Hand never contains these rules.
-## World layout: tile (x, z) covers x..x+1, z..z+1 on the ground plane; y is up.
+## World layout: tile (x, z) covers x..x+1, z..z+1 times HandCommand.tile_size on the ground
+## plane; y is up. Sizes and speeds are in tiles and scaled to metres per command.
 
 ## Tiles per second a sweeping hand moves.
 const SWEEP_SPEED := 5.5
 const VOLUME_HEIGHT := 1.2
-## Metres per second a swipe slides.
+## Tiles per second a swipe slides.
 const SWIPE_SPEED := 6.0
 
 @export var kind: String = ""
@@ -37,6 +38,37 @@ func make_shape(command: HandCommand) -> Shape3D:
 
 ## Footprint of the effect volume in metres (x, height, z).
 func volume_size(command: HandCommand) -> Vector3:
+	var tiles := _footprint_tiles(command)
+	return Vector3(tiles.x * command.tile_size, VOLUME_HEIGHT, tiles.z * command.tile_size)
+
+
+## Centre of the effect before it moves, in metres: where the hand waits at the end of its emergence.
+func rest_position(command: HandCommand) -> Vector3:
+	if kind == "swipe":
+		return command.start
+	return _rest_tiles(command) * command.tile_size
+
+
+func active_position(command: HandCommand, active_elapsed: float) -> Vector3:
+	var rest := rest_position(command)
+	if kind == "swipe":
+		return rest + command.direction * SWIPE_SPEED * command.tile_size * active_elapsed
+	if kind != "sweep":
+		return rest
+	var travel := active_elapsed * SWEEP_SPEED * command.tile_size
+	match command.side:
+		"left":
+			return rest + Vector3(travel, 0.0, 0.0)
+		"right":
+			return rest - Vector3(travel, 0.0, 0.0)
+		"top":
+			return rest + Vector3(0.0, 0.0, travel)
+		_:
+			return rest - Vector3(0.0, 0.0, travel)
+
+
+## Footprint in tiles (x, unused, z).
+func _footprint_tiles(command: HandCommand) -> Vector3:
 	match kind:
 		"sweep":
 			if command.side == "left" or command.side == "right":
@@ -52,8 +84,8 @@ func volume_size(command: HandCommand) -> Vector3:
 			return Vector3(size, VOLUME_HEIGHT, size)
 
 
-## Centre of the effect before it moves: where the hand waits at the end of its emergence.
-func rest_position(command: HandCommand) -> Vector3:
+## Centre of the effect before it moves, in tiles.
+func _rest_tiles(command: HandCommand) -> Vector3:
 	var anchor := Vector2(command.anchor)
 	match kind:
 		"sweep":
@@ -68,8 +100,6 @@ func rest_position(command: HandCommand) -> Vector3:
 					return Vector3(lane_centre, 0.0, 0.5)
 				_:
 					return Vector3(lane_centre, 0.0, last)
-		"swipe":
-			return command.start
 		"wall", "grab":
 			var half := size / 2.0
 			if command.horizontal:
@@ -77,24 +107,6 @@ func rest_position(command: HandCommand) -> Vector3:
 			return Vector3(anchor.x + 0.5, 0.0, anchor.y + half)
 		_:
 			return Vector3(anchor.x + size / 2.0, 0.0, anchor.y + size / 2.0)
-
-
-func active_position(command: HandCommand, active_elapsed: float) -> Vector3:
-	var rest := rest_position(command)
-	if kind == "swipe":
-		return rest + command.direction * SWIPE_SPEED * active_elapsed
-	if kind != "sweep":
-		return rest
-	var travel := active_elapsed * SWEEP_SPEED
-	match command.side:
-		"left":
-			return rest + Vector3(travel, 0.0, 0.0)
-		"right":
-			return rest - Vector3(travel, 0.0, 0.0)
-		"top":
-			return rest + Vector3(0.0, 0.0, travel)
-		_:
-			return rest - Vector3(0.0, 0.0, travel)
 
 
 func _lane(command: HandCommand) -> float:

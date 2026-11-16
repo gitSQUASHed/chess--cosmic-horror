@@ -124,8 +124,9 @@ static func tile(is_light: bool) -> Node3D:
 	return make("tile_light" if is_light else "tile_dark", "box", Vector3(0.98, 0.2, 0.98), Palette.TILE_LIGHT if is_light else Palette.TILE_DARK, false)
 
 
-static func pillar() -> Node3D:
-	return make("pillar", "box", Vector3(0.94, 0.6, 0.94), Palette.PILLAR, false)
+## `width` is the tile size in metres; a small gap leaves visible seams between pillars.
+static func pillar(width: float = 1.0) -> Node3D:
+	return make("pillar", "box", Vector3(width * 0.94, 0.6, width * 0.94), Palette.PILLAR, false)
 
 
 static func wall_segment() -> Node3D:

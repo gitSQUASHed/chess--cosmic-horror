@@ -10,6 +10,7 @@ The king briefly acknowledges the change: he feels no longer bound to chess rule
 
 - The level is generated as a persistent procedural field: revisiting an area must preserve its holes and tile layout.
 - Terrain is formed from individual pillars rather than a flat floor.
+- Each pillar is twice as wide as a Phase 1 board tile while the king keeps his size. This gives more room to stay on a tile and makes the king look small. Attack sizes are counted in tiles, so they grow with the pillars, and movement and hand speeds scale too, so timing per tile matches Phase 1.
 - Pillars exist and are only revealed within a limited radius around the king.
 - As the player explores, nearby pillars rise out of the void. This should feel like the world emerging from darkness, not like an obvious loading boundary.
 - Noise controls missing terrain. Holes may be a single tile or larger areas.

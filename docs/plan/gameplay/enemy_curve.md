@@ -8,7 +8,7 @@ Earlier mechanics remain active after each timestamp. The Phase 2 attack-hand co
 |---|---|
 | [00:00] | Start with one action hand. Enable tile side sweeps and 1×1 top-down grabs. Initial action interval: about four seconds. |
 | [00:30] | Add a second action hand. Enable temporary 1×1 wall actions when another hand is using a non-wall action. |
-| [01:00] | Upgrade side sweeps (3 tiles wide) and top-down grabs (3×1). |
+| [01:00] | Upgrade side sweeps (3 tiles wide), top-down grabs (3×1), and walls (3×1). |
 | [01:30] | Add a third action hand. |
 | [02:00] | End Phase 1 and begin the board-collapse transition. |
 

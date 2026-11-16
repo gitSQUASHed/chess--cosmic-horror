@@ -19,9 +19,10 @@ These values were measured on the 877×613 image. Camera and layout follow them;
 | Camera yaw | Grid seams at ±27.5° on screen, symmetric diamonds: 45° to the grid | `Constants.PHASE2_YAW_DEG` = 45 |
 | Camera tilt | Tile diamonds about 2:1 (71×37 px): about 31° | `Constants.PHASE2_TILT_DEG` = 32 |
 | Perspective | Grid lines stay parallel across the frame; tiles shrink only slightly toward the top | `Constants.PHASE2_FOV_DEG` = 25 |
-| Zoom | About 12 tiles of ground fill the screen height | `Constants.PHASE2_DISTANCE` = 31 |
+| Tile size | Tiles dwarf the king | `Constants.PHASE2_TILE_SIZE` = 2 m, twice a Phase 1 board tile |
+| Zoom | About 12 tiles of ground fill the screen height | `Constants.PHASE2_DISTANCE` = 31 × tile size |
 | Visible island | Radius of about 8 tiles around the king | `Constants.PILLAR_REVEAL_RADIUS` = 8 |
-| King and hands | King tiny, guiding hand a glowing cube, the brightest element | Same models in both phases; only the camera makes them look small |
+| King and hands | King tiny, guiding hand a glowing cube, the brightest element | Same models in both phases; the larger tiles and farther camera make them look small |
 | Fisheye | None visible; edges stay straight | Calm fisheye 0.12 |
 | Vignette | None visible; the void is the same gray in the corners and the centre | Calm vignette 0.1 |
 | Grain | Fine, about one pixel cell; spread grows with brightness (SD about 9 on the void, 17 on tiles) | Brightness-proportional grain, about half as strong at calm, see [shaders](shaders.md) |
@@ -43,6 +44,7 @@ These values were measured on the 877×613 image. Camera and layout follow them;
 - A lower, flatter camera than Phase 1, rotated 45 degrees around the vertical axis so tiles read as diamonds, with a narrow field of view that looks almost isometric. Yaw, tilt, field of view and distance are single configurable values in `Constants`.
 - Fisheye is barely noticeable at calm and only bends the view as the guiding hand closes in.
 - Pure void behind the world: no room, player silhouettes, clock, or horizon. The void is a lifted gray, not black, so the noise stays visible on it.
+- Tile pillars are twice the size of Phase 1 board tiles while the king keeps its size, so he reads as a tiny piece in a vast structure.
 - Only a radius of about eight tiles of muted green pillars is visible; the irregular island edge, not a vignette, limits the view.
 - The king is isolated in a small island of legibility.
 - Celestial white hands provide the brightest light source.

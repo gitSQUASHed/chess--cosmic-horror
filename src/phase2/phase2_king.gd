@@ -6,8 +6,10 @@ extends CharacterBody3D
 
 signal captured
 
-const WALK_SPEED := 5.0
-const DASH_SPEED := 9.0
+## Horizontal speeds scale with the tile size, so tiles per second match the Phase 1 feel and
+## a dash still clears one hole. Jump height and gravity stay in metres.
+const WALK_SPEED := 5.0 * Constants.PHASE2_TILE_SIZE
+const DASH_SPEED := 9.0 * Constants.PHASE2_TILE_SIZE
 const DASH_TIME := 0.32
 const DASH_JUMP := 3.2
 const DASH_COOLDOWN := 0.5

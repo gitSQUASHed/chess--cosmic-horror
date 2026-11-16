@@ -74,4 +74,4 @@ func _stock_queue() -> void:
 		if elapsed >= 30.0 and not _hands.has_queued("wall"):
 			options.append("wall")
 		var kind := options[_rng.randi_range(0, options.size() - 1)]
-		_hands.request(kind, 1 if kind == "wall" else attack_level())
+		_hands.request(kind, attack_level())

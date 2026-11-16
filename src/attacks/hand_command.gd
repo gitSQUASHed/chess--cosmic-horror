@@ -18,6 +18,9 @@ var origin := Vector3.ZERO
 var start := Vector3.ZERO
 var direction := Vector3.ZERO
 var heading := 0.0
+## Metres per tile: 1 on the Phase 1 board, Constants.PHASE2_TILE_SIZE on the pillar field.
+## Anchors and sizes are in tiles; positions, volumes and speeds are scaled by this.
+var tile_size := 1.0
 ## If above zero, replaces the definition's active duration (e.g. until a swipe leaves the frame).
 var active_override := -1.0
 

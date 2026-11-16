@@ -5,10 +5,12 @@ extends Node3D
 
 signal finished(result: String)
 
-## Visible ground area around the king, in camera-aligned metres (x across, y down the screen).
+## Metres per Phase 2 tile.
+const TILE := Constants.PHASE2_TILE_SIZE
+## Visible ground area around the king, in camera-aligned tiles (x across, y down the screen).
 ## Asymmetric because of perspective: the far side (up the screen) reaches farther than the near
 ## side. Derived from the Phase 2 camera pose in Constants; update both together.
-const VIEW_RECT := Rect2(-11.0, -17.0, 22.0, 25.5)
+const VIEW_RECT_TILES := Rect2(-11.0, -17.0, 22.0, 25.5)
 
 var context: GameContext
 ## Highest threat value of all guiding hands, 0 to 1 (used by the screen effects).
@@ -28,9 +30,9 @@ func setup(game_context: GameContext) -> void:
 
 
 func _ready() -> void:
-	var start := Vector3(0.5, 8.0, 0.5)
+	var start := PillarField.tile_to_world(Vector2i.ZERO) + Vector3(0.0, 8.0, 0.0)
 	context.camera.release()
-	context.camera.snap_to(CameraRig.phase_two_pose(Vector3(0.5, 0.0, 0.5)))
+	context.camera.snap_to(CameraRig.phase_two_pose(PillarField.tile_to_world(Vector2i.ZERO)))
 	_field = PillarField.new()
 	add_child(_field)
 	_field.setup(context.run_config.run_seed, context.run_config.escape_side)
@@ -101,13 +103,14 @@ func _place(definition: AttackDefinition, _hand_index: int) -> HandCommand:
 	var down := context.camera.screen_to_world_dir(Vector2.DOWN)
 	var command := HandCommand.new()
 	command.definition = definition
+	command.tile_size = TILE
 	if definition.kind == "swipe":
 		_place_swipe(command, king_position, right, down, rng)
 		return command
 	var offset := Vector2(rng.randf_range(-8.0, 8.0), rng.randf_range(-5.0, 5.0))
 	if definition.kind != "grab" and rng.randf() < 0.5:
 		offset = Vector2(rng.randf_range(-1.5, 1.5), rng.randf_range(-1.5, 1.5))
-	var target := PillarField.world_to_tile(king_position + right * offset.x + down * offset.y)
+	var target := PillarField.world_to_tile(king_position + (right * offset.x + down * offset.y) * TILE)
 	command.anchor = target
 	if definition.kind == "wall":
 		command.horizontal = rng.randi_range(0, 1) == 0
@@ -118,7 +121,7 @@ func _place(definition: AttackDefinition, _hand_index: int) -> HandCommand:
 		command.anchor = target - (Vector2i(half, 0) if command.horizontal else Vector2i(0, half))
 	else:
 		command.anchor = target - Vector2i(int(definition.size / 2.0), int(definition.size / 2.0))
-	command.origin = definition.rest_position(command) + Vector3(0.0, 8.0, 0.0)
+	command.origin = definition.rest_position(command) + Vector3(0.0, 8.0 * TILE, 0.0)
 	return command
 
 
@@ -127,8 +130,8 @@ func _place_swipe(command: HandCommand, king_position: Vector3, right: Vector3, 
 	var edge := rng.randi_range(0, 3)
 	var spot := Vector2.ZERO
 	var inward := Vector2.ZERO
-	var low := VIEW_RECT.position
-	var high := VIEW_RECT.end
+	var low := VIEW_RECT_TILES.position
+	var high := VIEW_RECT_TILES.end
 	match edge:
 		0:
 			spot = Vector2(low.x, rng.randf_range(low.y, high.y))
@@ -143,13 +146,13 @@ func _place_swipe(command: HandCommand, king_position: Vector3, right: Vector3, 
 			spot = Vector2(rng.randf_range(low.x, high.x), high.y)
 			inward = Vector2.UP
 	var screen_dir := inward.rotated(rng.randf_range(-1.0, 1.0))
-	command.start = king_position + right * spot.x + down * spot.y
+	command.start = king_position + (right * spot.x + down * spot.y) * TILE
 	command.start.y = 0.0
 	command.direction = (right * screen_dir.x + down * screen_dir.y).normalized()
 	command.heading = atan2(command.direction.x, command.direction.z)
-	var travel := _exit_distance(spot, screen_dir, VIEW_RECT) + 2.0
+	var travel := _exit_distance(spot, screen_dir, VIEW_RECT_TILES) + 2.0
 	command.active_override = travel / AttackDefinition.SWIPE_SPEED
-	command.origin = command.start - command.direction * 2.0
+	command.origin = command.start - command.direction * 2.0 * TILE
 
 
 func _exit_distance(spot: Vector2, direction: Vector2, view: Rect2) -> float:
@@ -173,7 +176,7 @@ func _on_action_activated(_hand: Hand, command: HandCommand) -> void:
 
 func _spawn_guiding_hand() -> void:
 	var angle := context.run_config.rng.randf_range(0.0, TAU)
-	var start := _king.global_position + Vector3(cos(angle), 0.0, sin(angle)) * 22.0
+	var start := _king.global_position + Vector3(cos(angle), 0.0, sin(angle)) * 22.0 * TILE
 	start.y = 0.0
 	var guiding := GuidingHand.new()
 	guiding.setup(_king, start)
@@ -202,7 +205,7 @@ func _escape() -> void:
 	context.camera.release()
 	var forward := context.camera.screen_to_world_dir(Vector2(float(context.run_config.escape_side), 0.0))
 	var tween := create_tween().set_parallel(true)
-	tween.tween_property(_king, "global_position", _king.global_position + forward * 3.0 + Vector3(0.0, -6.0, 0.0), 1.2).set_ease(Tween.EASE_IN)
+	tween.tween_property(_king, "global_position", _king.global_position + forward * 3.0 * TILE + Vector3(0.0, -6.0, 0.0), 1.2).set_ease(Tween.EASE_IN)
 	_king.freeze()
 	_finish_with_fade("escaped", false)
 

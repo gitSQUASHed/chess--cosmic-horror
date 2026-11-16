@@ -12,6 +12,7 @@ const HOLE_CHANCE := 0.19
 ## Tiles around the start that are always solid.
 const SAFE_RADIUS := 2
 const SURFACE_Y := 0.0
+const TILE_SIZE := Constants.PHASE2_TILE_SIZE
 const PILLAR_HEIGHT := 0.6
 const HIDDEN_Y := -2.0
 
@@ -38,11 +39,12 @@ func edge_x() -> int:
 
 
 static func world_to_tile(position_3d: Vector3) -> Vector2i:
-	return Vector2i(floori(position_3d.x), floori(position_3d.z))
+	return Vector2i(floori(position_3d.x / TILE_SIZE), floori(position_3d.z / TILE_SIZE))
 
 
+## Centre of a tile's top surface.
 static func tile_to_world(tile: Vector2i) -> Vector3:
-	return Vector3(tile.x + 0.5, SURFACE_Y, tile.y + 0.5)
+	return Vector3((tile.x + 0.5) * TILE_SIZE, SURFACE_Y, (tile.y + 0.5) * TILE_SIZE)
 
 
 ## Deterministic terrain: same answer for the same seed and tile, minus removed tiles.
@@ -128,7 +130,7 @@ func pillar_count() -> int:
 
 
 func _spawn(cell: Vector2i) -> void:
-	var pillar := Placeholders.pillar()
+	var pillar := Placeholders.pillar(TILE_SIZE)
 	var shade := 0.82 + 0.18 * _noise(cell + Vector2i(7919, 104729))
 	Placeholders.set_brightness(pillar, shade)
 	var body := StaticBody3D.new()
@@ -136,13 +138,13 @@ func _spawn(cell: Vector2i) -> void:
 	body.collision_mask = 0
 	var shape_node := CollisionShape3D.new()
 	var shape := BoxShape3D.new()
-	shape.size = Vector3(1.0, PILLAR_HEIGHT, 1.0)
+	shape.size = Vector3(TILE_SIZE, PILLAR_HEIGHT, TILE_SIZE)
 	shape_node.shape = shape
 	shape_node.position.y = PILLAR_HEIGHT * 0.5
 	body.add_child(shape_node)
 	pillar.add_child(body)
 	# The pillar model's origin is its base; its top surface is at SURFACE_Y.
-	pillar.position = Vector3(cell.x + 0.5, HIDDEN_Y, cell.y + 0.5)
+	pillar.position = tile_to_world(cell) + Vector3(0.0, HIDDEN_Y - SURFACE_Y, 0.0)
 	add_child(pillar)
 	_pillars[cell] = pillar
 	var tween := create_tween()

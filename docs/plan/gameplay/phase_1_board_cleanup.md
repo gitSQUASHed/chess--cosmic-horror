@@ -47,7 +47,7 @@ The background must telegraph attacks. The player should understand which attack
 |---|---|
 | 0:00–0:30 | One hand performs single-tile sweeps and 1×1 grabs. |
 | 0:30–1:00 | A second hand enters. It may place a temporary 1×1 wall only while another hand performs a non-wall action. |
-| 1:00–1:30 | Sweeps widen to three tiles and grabs become 3×1 lines. |
+| 1:00–1:30 | Sweeps widen to three tiles, and grabs and walls become 3×1 lines. |
 | 1:30–2:00 | A third hand enters. Cooldown and telegraph time continue to decrease within their defined limits. |
 
 At 2:00 the board begins to break apart, initiating the transition cutscene.
