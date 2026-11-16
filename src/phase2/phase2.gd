@@ -111,7 +111,12 @@ func _place(definition: AttackDefinition, _hand_index: int) -> HandCommand:
 	command.anchor = target
 	if definition.kind == "wall":
 		command.horizontal = rng.randi_range(0, 1) == 0
-	elif definition.kind != "grab":
+	elif definition.kind == "grab":
+		# Centre the grab line on the target tile.
+		command.horizontal = rng.randi_range(0, 1) == 0
+		var half := int(definition.size / 2.0)
+		command.anchor = target - (Vector2i(half, 0) if command.horizontal else Vector2i(0, half))
+	else:
 		command.anchor = target - Vector2i(int(definition.size / 2.0), int(definition.size / 2.0))
 	command.origin = definition.rest_position(command) + Vector3(0.0, 8.0, 0.0)
 	return command

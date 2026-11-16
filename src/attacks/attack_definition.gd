@@ -13,9 +13,8 @@ const SWIPE_SPEED := 6.0
 @export var level: int = 1
 ## Folder/model base name without the level suffix, e.g. "grabbing".
 @export var asset_name: String = ""
-## Width of a sweep, side of a grab, length of a wall or swipe, side of a void/punch area.
+## Width of a sweep, length of a grab, wall or swipe line, side of a void/punch area.
 @export var size: int = 1
-@export var is_circle: bool = false
 @export var telegraph_base: float = 0.7
 @export var active_duration: float = 1.0
 @export var recovery: float = 0.35
@@ -31,11 +30,6 @@ func placeholder_name() -> String:
 
 ## Collision shape of the effect volume, centred on rest_position().
 func make_shape(command: HandCommand) -> Shape3D:
-	if kind == "grab" and is_circle:
-		var cylinder := CylinderShape3D.new()
-		cylinder.radius = size / 2.0
-		cylinder.height = VOLUME_HEIGHT
-		return cylinder
 	var box := BoxShape3D.new()
 	box.size = volume_size(command)
 	return box
@@ -48,7 +42,8 @@ func volume_size(command: HandCommand) -> Vector3:
 			if command.side == "left" or command.side == "right":
 				return Vector3(1.0, VOLUME_HEIGHT, size)
 			return Vector3(size, VOLUME_HEIGHT, 1.0)
-		"wall":
+		"wall", "grab":
+			# A line of `size` tiles starting at the anchor, horizontal or vertical.
 			return Vector3(size, VOLUME_HEIGHT, 1.0) if command.horizontal else Vector3(1.0, VOLUME_HEIGHT, size)
 		"swipe":
 			# Width across the sliding direction; the hand node is rotated to its heading.
@@ -73,11 +68,9 @@ func rest_position(command: HandCommand) -> Vector3:
 					return Vector3(lane_centre, 0.0, 0.5)
 				_:
 					return Vector3(lane_centre, 0.0, last)
-		"grab":
-			return Vector3(anchor.x + 0.5, 0.0, anchor.y + 0.5)
 		"swipe":
 			return command.start
-		"wall":
+		"wall", "grab":
 			var half := size / 2.0
 			if command.horizontal:
 				return Vector3(anchor.x + half, 0.0, anchor.y + 0.5)

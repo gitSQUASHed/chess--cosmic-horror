@@ -191,12 +191,8 @@ func _place_on_board(definition: AttackDefinition) -> HandCommand:
 					command.anchor = Vector2i(lane, 0)
 				_:
 					command.anchor = Vector2i(lane, board - 1)
-		"grab":
-			var radius := int(definition.size / 2.0)
-			command.anchor = Vector2i(
-				rng.randi_range(radius, board - radius - 1),
-				rng.randi_range(radius, board - radius - 1))
 		_:
+			# Walls and grabs: a line of `size` tiles, horizontal or vertical, inside the board.
 			command.horizontal = rng.randi_range(0, 1) == 0
 			var span_x := definition.size if command.horizontal else 1
 			var span_y := 1 if command.horizontal else definition.size

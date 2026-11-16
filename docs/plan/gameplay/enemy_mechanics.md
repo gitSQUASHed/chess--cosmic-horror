@@ -17,8 +17,8 @@ This document defines the product enemy vocabulary. Exact values are balancing p
 | Action | Availability | Basic form | Upgrade |
 |---|---|---|---|
 | Side sweep | Phase 1 | A 1-tile-wide hand sweeps across one board lane. | 3 tiles wide. |
-| Top-down grab | Both phases | 3×3 square danger area. | 5×5 circular area. |
-| Wall | Both phases | Temporary 3×1 horizontal or vertical blocking line. | 5×1 blocking line. |
+| Top-down grab | Both phases | 1×1 danger area. | 3×1 horizontal or vertical danger line. |
+| Wall | Both phases | Temporary 1×1 blocking tile. | Temporary 3×1 horizontal or vertical blocking line. |
 | Flat swipe | Phase 2 | A 1×1 hand appears just inside the camera frame, slides in any direction or angle, and persists until it leaves the frame. | 3×1 swipe. |
 | Void removal | Phase 2 | Removes one tile pillar. | Removes a 2×2 tile area. |
 | Top-down punch | Phase 2 | Destroys one tile beneath the impact point. | Destroys a 3×3 tile area. |

@@ -52,8 +52,8 @@ func _process(delta: float) -> void:
 	_hands.tick(delta)
 	_king.try_move(_grid_input())
 	Placeholders.set_subtitle(_clock, _format_time(Constants.PHASE_ONE_SECONDS - _director.elapsed))
-	_debug_label.text = "DEBUG phase 1  t=%s  hands=%d  queue=%d\nWASD/arrows move | F3 +30s | F10 hide | R restart | [ ] pixel size | F2 phase 2" % [
-		_format_time(_director.elapsed), _hands.hand_count(), _hands.queue_size()]
+	_debug_label.text = "DEBUG phase 1  t=%s  hands=%d  queue=%d  attack level=%d\nWASD/arrows move | F3 +30s | F10 hide | R restart | [ ] pixel size | F2 phase 2" % [
+		_format_time(_director.elapsed), _hands.hand_count(), _hands.queue_size(), _director.attack_level()]
 
 
 func _unhandled_input(event: InputEvent) -> void:

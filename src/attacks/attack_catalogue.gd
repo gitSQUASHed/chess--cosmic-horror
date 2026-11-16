@@ -31,14 +31,13 @@ static func _build(kind: String, level: int) -> AttackDefinition:
 			definition.recovery = 0.35
 		"grab":
 			definition.asset_name = "grabbing"
-			definition.size = 5 if upgraded else 3
-			definition.is_circle = upgraded
+			definition.size = 3 if upgraded else 1
 			definition.telegraph_base = 0.92
 			definition.active_duration = 0.48
 			definition.recovery = 0.4
 		"wall":
 			definition.asset_name = "wall"
-			definition.size = 5 if upgraded else 3
+			definition.size = 3 if upgraded else 1
 			definition.telegraph_base = 0.7
 			definition.active_duration = 3.7
 			definition.recovery = 0.3
