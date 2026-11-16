@@ -5,9 +5,11 @@ extends Node3D
 ## falls toward a minimum as it speeds up, so sharp direction changes make it overshoot.
 
 const MAX_SPEED := Phase2King.WALK_SPEED * 3.0
-const ACCELERATION := 0.93 * Constants.PHASE2_TILE_SIZE
-const MIN_TURN_RATE := 0.34
-const MAX_TURN_RATE := 1.35
+## Acceleration and turn rates follow the Phase 2 speed multiplier, so the hand keeps the same
+## path shape, only faster. MAX_SPEED follows the king's walking speed.
+const ACCELERATION := 0.93 * Constants.PHASE2_TILE_SIZE * Constants.PHASE2_SPEED_MULTIPLIER * Constants.PHASE2_SPEED_MULTIPLIER
+const MIN_TURN_RATE := 0.34 * Constants.PHASE2_SPEED_MULTIPLIER
+const MAX_TURN_RATE := 1.35 * Constants.PHASE2_SPEED_MULTIPLIER
 ## Distance at which the threat value reaches 1.
 const THREAT_NEAR := 1.5 * Constants.PHASE2_TILE_SIZE
 ## Distance at which the threat value reaches 0.

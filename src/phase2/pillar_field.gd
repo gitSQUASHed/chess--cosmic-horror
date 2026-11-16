@@ -13,8 +13,10 @@ const HOLE_CHANCE := 0.19
 const SAFE_RADIUS := 2
 const SURFACE_Y := 0.0
 const TILE_SIZE := Constants.PHASE2_TILE_SIZE
-const PILLAR_HEIGHT := 0.6
-const HIDDEN_Y := -2.0
+## Pillars are cubes: as tall as a tile is wide.
+const PILLAR_HEIGHT := TILE_SIZE
+## Base height of a pillar before it rises; its top starts this far below the surface.
+const HIDDEN_Y := SURFACE_Y - PILLAR_HEIGHT - 2.0
 
 var seed_value := 0
 var escape_side := 1
@@ -111,8 +113,10 @@ func remove_tile(tile: Vector2i) -> void:
 	_pillars.erase(tile)
 	_disable_collision(pillar)
 	var tween := create_tween().set_parallel(true)
-	tween.tween_property(pillar, "position:y", -6.0, 1.2).set_ease(Tween.EASE_IN)
+	tween.tween_property(pillar, "position:y", HIDDEN_Y - 4.0, 1.2).set_ease(Tween.EASE_IN)
 	var from_brightness := 0.0 if pillar.has_meta("marked") else 1.0
+	# The attack is happening: the dark outlined warning is no longer shown.
+	Placeholders.remove_outline(pillar)
 	tween.tween_method(func(value: float) -> void: Placeholders.set_brightness(pillar, value), from_brightness, 0.0, 1.2)
 	tween.chain().tween_callback(pillar.queue_free)
 
@@ -145,7 +149,7 @@ func pillar_count() -> int:
 
 
 func _spawn(cell: Vector2i) -> void:
-	var pillar := Placeholders.pillar(TILE_SIZE)
+	var pillar := Placeholders.pillar(TILE_SIZE, PILLAR_HEIGHT)
 	var shade := 0.82 + 0.18 * _noise(cell + Vector2i(7919, 104729))
 	Placeholders.set_brightness(pillar, shade)
 	var body := StaticBody3D.new()

@@ -9,7 +9,7 @@
 ## Consequences
 
 - The camera angle, the Phase 2 rotation, and the pixel size are runtime values and can be tuned or animated without re-exporting art.
-- Models need real animations (hands: emerge, sweep, grab, wall placement, punch, retreat; king: idle, move, dash, fall, caught) instead of directional frame sets.
+- Models need real animations (hands: emerge, sweep, grab, wall placement, punch, retreat; king: idle, move, jump, fall, caught) instead of directional frame sets.
 - Attack and collision shapes can use 3D collision volumes and physics queries, which the previous sprite approach could not.
 - Grab and fall transitions can be built from camera moves and animated pixelation, with the models reacting in the same scene.
 

@@ -22,6 +22,7 @@ func play(scene_root: Node3D, context: GameContext, subject: Node3D) -> void:
 	_playing = true
 	var base := subject.global_position
 	var grabber := Placeholders.hand("hand/grabbing-lvl1", Vector3(1.6, 0.4, 1.6))
+	Placeholders.add_outline(grabber, Placeholders.OUTLINE_WIDTH_FIELD if subject is Phase2King else Placeholders.OUTLINE_WIDTH_BOARD)
 	scene_root.add_child(grabber)
 	grabber.global_position = base + Vector3(0.0, 5.0, 0.0)
 	var closeup := CameraRig.Pose.new()

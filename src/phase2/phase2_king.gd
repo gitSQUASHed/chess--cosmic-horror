@@ -1,30 +1,24 @@
 class_name Phase2King
 extends CharacterBody3D
-## Phase 2 king: free movement on pillar surfaces and the jump-dash. A physics body on the king
-## layer that collides with pillars and walls. The dash is a short burst with a slow turn
-## rate; it can cross narrow gaps or end in one. A hurtbox Area3D detects hand danger volumes.
+## Phase 2 king: free movement on pillar surfaces and a jump. A physics body on the king layer
+## that collides with pillars and walls. The jump keeps the current walking direction and speed
+## and can clear a narrow gap. A hurtbox Area3D detects hand danger volumes.
 
 signal captured
 
-## Horizontal speeds scale with the tile size, so tiles per second match the Phase 1 feel and
-## a dash still clears one hole. Jump height and gravity stay in metres.
-const WALK_SPEED := 5.0 * Constants.PHASE2_TILE_SIZE
-const DASH_SPEED := 9.0 * Constants.PHASE2_TILE_SIZE
-const DASH_TIME := 0.32
-const DASH_JUMP := 3.2
-const DASH_COOLDOWN := 0.5
-const GRAVITY := 20.0
-## How fast the dash direction may turn (radians per second).
-const DASH_TURN_RATE := 1.4
+## Walking speed scales with the tile size (same tiles per second as before) and with the
+## Phase 2 speed multiplier.
+const WALK_SPEED := 5.0 * Constants.PHASE2_TILE_SIZE * Constants.PHASE2_SPEED_MULTIPLIER
+## Vertical take-off speed and gravity: a low, quick hop of about a third of a second that
+## covers roughly three tiles at walking speed.
+const JUMP_VELOCITY := 5.0
+const GRAVITY := 30.0
 
 var camera: CameraRig
 var dead := false
 
 var _visual: Node3D
 var _facing := Vector3.FORWARD
-var _dash_left := 0.0
-var _dash_dir := Vector3.FORWARD
-var _cooldown := 0.0
 var _animation := ""
 
 
@@ -57,10 +51,6 @@ func setup(is_white: bool, camera_rig: CameraRig) -> void:
 	add_child(hurtbox)
 
 
-func is_dashing() -> bool:
-	return _dash_left > 0.0
-
-
 ## Stops all control, e.g. while being picked up or at the end of a run.
 func freeze() -> void:
 	dead = true
@@ -69,36 +59,23 @@ func freeze() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	_cooldown = maxf(0.0, _cooldown - delta)
 	var input := Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	var desired := Vector3(input.x, 0.0, input.y)
 	if camera != null:
 		desired = camera.screen_to_world_dir(input)
 	var wants_move := desired.length() > 0.1
 	var horizontal := desired * WALK_SPEED
-	if _dash_left > 0.0:
-		_dash_left -= delta
-		if wants_move:
-			var angle := _dash_dir.signed_angle_to(desired.normalized(), Vector3.UP)
-			_dash_dir = _dash_dir.rotated(Vector3.UP, clampf(angle, -DASH_TURN_RATE * delta, DASH_TURN_RATE * delta)).normalized()
-		horizontal = _dash_dir * DASH_SPEED
-		if _dash_left <= 0.0:
-			_cooldown = DASH_COOLDOWN
-	elif Input.is_action_just_pressed("jump_dash") and is_on_floor() and _cooldown <= 0.0:
-		_dash_dir = desired.normalized() if wants_move else _facing
-		_dash_left = DASH_TIME
-		velocity.y = DASH_JUMP
-		horizontal = _dash_dir * DASH_SPEED
+	if Input.is_action_just_pressed("jump") and is_on_floor():
+		velocity.y = JUMP_VELOCITY
 	if wants_move:
 		_facing = desired.normalized()
 		_visual.rotation.y = atan2(_facing.x, _facing.z)
 	velocity.x = horizontal.x
 	velocity.z = horizontal.z
 	velocity.y -= GRAVITY * delta
-	var animation := "dash" if _dash_left > 0.0 else ("walk" if wants_move else "idle")
+	var animation := "jump" if not is_on_floor() else ("walk" if wants_move else "idle")
 	if animation != _animation:
 		_animation = animation
-		Placeholders.set_subtitle(_visual, "dash" if animation == "dash" else "")
 		ModelAnimator.play(_visual, animation)
 	move_and_slide()
 

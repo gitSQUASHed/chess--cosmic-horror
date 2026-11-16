@@ -10,7 +10,7 @@ The king briefly acknowledges the change: he feels no longer bound to chess rule
 
 - The level is generated as a persistent procedural field: revisiting an area must preserve its holes and tile layout.
 - Terrain is formed from individual pillars rather than a flat floor.
-- Each pillar is twice as wide as a Phase 1 board tile while the king keeps his size. This gives more room to stay on a tile and makes the king look small. Attack sizes are counted in tiles, so they grow with the pillars, and movement and hand speeds scale too, so timing per tile matches Phase 1.
+- Pillars are cubes, as tall as they are wide. Each pillar is twice as wide as a Phase 1 board tile while the king keeps his size. This gives more room to stay on a tile and makes the king look small. Attack sizes are counted in tiles, so they grow with the pillars, and movement and hand speeds scale too, so timing per tile matches Phase 1.
 - Pillars exist and are only revealed within a limited radius around the king.
 - As the player explores, nearby pillars rise out of the void. This should feel like the world emerging from darkness, not like an obvious loading boundary.
 - Noise controls missing terrain. Holes may be a single tile or larger areas.
@@ -19,7 +19,8 @@ The king briefly acknowledges the change: he feels no longer bound to chess rule
 ## Player movement
 
 - Movement is free and fast rather than tile-clipped.
-- The king can jump-dash small gaps. The dash launches rapidly in the current movement direction and can only turn slowly while active, making it a strong evasive move that can also carry the king into a hole. See [movement](movement.md) for the full rule set.
+- Everything moves twice as fast as the base speed: the king, the guiding hands and the attacks. Only the one-second attack telegraph stays the same.
+- The king can jump small gaps. The jump keeps the current direction and speed, so it can also carry the king into a hole. See [movement](movement.md) for the full rule set.
 - Falling into a hole ends the run with the void ending.
 
 ## Threats

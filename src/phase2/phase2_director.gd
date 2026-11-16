@@ -66,8 +66,9 @@ func _apply_schedule() -> void:
 	if target != _hands.hand_count():
 		_hands.set_hand_count(target, FIRST_HAND_DELAY if _hands.hand_count() == 0 else LATER_HAND_DELAY)
 	_hands.action_cooldown = _action_interval()
-	# Attacks speed up over the run (1.5x after 7.5 minutes); the telegraph stays fixed.
-	_hands.speed_scale = 1.0 + minf(elapsed / 450.0, 1.0) * 0.5
+	# Attacks run at the Phase 2 speed multiplier and speed up a further 1.5x over 7.5 minutes;
+	# the telegraph stays fixed.
+	_hands.speed_scale = Constants.PHASE2_SPEED_MULTIPLIER * (1.0 + minf(elapsed / 450.0, 1.0) * 0.5)
 
 
 func _action_interval() -> float:

@@ -22,8 +22,8 @@ var action_cooldown := 4.0
 var speed_scale := 1.0
 ## Height of the ground surface hands stand on.
 var surface_y := 0.0
-## Phase 2: hands get a solid white outline.
-var outline_hands := false
+## Thickness of the white outline every hand gets (Placeholders.OUTLINE_WIDTH_*).
+var outline_width := Placeholders.OUTLINE_WIDTH_BOARD
 ## Phase 2 rule: two simultaneous actions may not share an anchor tile.
 var forbid_shared_centers := false
 ## Phase 2: returns a placement for the request, or null to use the board placement.
@@ -134,7 +134,7 @@ func _assign_requests() -> void:
 			if forbid_shared_centers and _shares_center(command):
 				continue
 			_queue.remove_at(queue_index)
-			hand.outlined = outline_hands
+			hand.outline_width = outline_width
 			hand.execute(command)
 			break
 

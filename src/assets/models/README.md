@@ -28,5 +28,5 @@ Actions: `sweep`, `grabbing`, `wall`, `swipe`, `void-removal`, `punch`.
 
 Put an `AnimationPlayer` in the model with these clip names; missing clips are skipped.
 
-- Hands: `emerging`, `active`, `recovering` (loop `idle` is not used).
-- King: `idle`, `move` (Phase 1), `walk`, `dash` (Phase 2).
+- Hands: `emerging`, `dropping` (top-down hands falling in), `active`, `recovering` (loop `idle` is not used).
+- King: `idle`, `move` (Phase 1), `walk`, `jump` (Phase 2).

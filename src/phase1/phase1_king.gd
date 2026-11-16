@@ -17,6 +17,7 @@ var _tween: Tween
 
 func setup(is_white: bool) -> void:
 	_visual = Placeholders.king(is_white)
+	Placeholders.add_outline(_visual, Placeholders.OUTLINE_WIDTH_BOARD)
 	add_child(_visual)
 	_hurtbox = Area3D.new()
 	_hurtbox.collision_layer = Layers.KING

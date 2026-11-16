@@ -5,8 +5,9 @@ extends RefCounted
 ## Hands are red, the king is green, tiles and pillars are white/gray.
 
 const MODEL_DIR := "res://src/assets/models/"
-## Phase 2 outline thickness in metres (about one screen pixel cell at the Phase 2 zoom).
-const OUTLINE_WIDTH := 0.12
+## Outline thickness in metres, about one screen pixel cell at each phase's zoom.
+const OUTLINE_WIDTH_BOARD := 0.05
+const OUTLINE_WIDTH_FIELD := 0.12
 
 
 ## Builds a placeholder (or the real model, if present) for `placeholder_name`.
@@ -97,7 +98,7 @@ static func set_brightness(model: Node3D, brightness: float) -> void:
 
 ## Adds a solid white outline to every mesh of `model` (placeholder or real model): an unshaded,
 ## front-culled hull slightly larger than the mesh, so lights and shadows never affect it.
-static func add_outline(model: Node3D, width: float = OUTLINE_WIDTH) -> void:
+static func add_outline(model: Node3D, width: float = OUTLINE_WIDTH_FIELD) -> void:
 	if model.has_meta("outlined"):
 		return
 	model.set_meta("outlined", true)
@@ -123,6 +124,18 @@ static func add_outline(model: Node3D, width: float = OUTLINE_WIDTH) -> void:
 		var centre := bounds.get_center()
 		hull.transform = Transform3D(Basis.from_scale(grow), centre - centre * grow)
 		source.add_child(hull)
+
+
+static func remove_outline(model: Node3D) -> void:
+	if not model.has_meta("outlined"):
+		return
+	model.remove_meta("outlined")
+	var meshes: Array[MeshInstance3D] = []
+	_collect_meshes(model, meshes)
+	for source in meshes:
+		for child in source.get_children():
+			if child is MeshInstance3D and child.name == "Outline":
+				child.queue_free()
 
 
 static func _collect_meshes(node: Node, result: Array[MeshInstance3D]) -> void:
@@ -186,9 +199,10 @@ static func tile(is_light: bool) -> Node3D:
 	return make("tile_light" if is_light else "tile_dark", "box", Vector3(0.98, 0.2, 0.98), Palette.TILE_LIGHT if is_light else Palette.TILE_DARK, false)
 
 
-## `width` is the tile size in metres; a small gap leaves visible seams between pillars.
-static func pillar(width: float = 1.0) -> Node3D:
-	return make("pillar", "box", Vector3(width * 0.94, 0.6, width * 0.94), Palette.PILLAR, false)
+## A cube-like pillar: `width` is the tile size in metres (a small gap leaves visible seams),
+## `height` its full height so its top lines up with the collision box.
+static func pillar(width: float = 1.0, height: float = 1.0) -> Node3D:
+	return make("pillar", "box", Vector3(width * 0.94, height, width * 0.94), Palette.PILLAR, false)
 
 
 static func wall_segment() -> Node3D:

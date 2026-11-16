@@ -9,7 +9,7 @@ static func ensure() -> void:
 	_action(&"move_left", [KEY_A, KEY_LEFT])
 	_action(&"move_right", [KEY_D, KEY_RIGHT])
 	_action(&"confirm", [KEY_SPACE, KEY_ENTER])
-	_action(&"jump_dash", [KEY_SPACE])
+	_action(&"jump", [KEY_SPACE])
 
 
 static func _action(action: StringName, keys: Array) -> void:

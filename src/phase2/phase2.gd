@@ -48,7 +48,7 @@ func _ready() -> void:
 	_hands.setup(context.run_config.rng)
 	_hands.forbid_shared_centers = true
 	_hands.placement_override = Callable(self, "_place")
-	_hands.outline_hands = true
+	_hands.outline_width = Placeholders.OUTLINE_WIDTH_FIELD
 	_hands.action_telegraphed.connect(_on_action_telegraphed)
 	_hands.action_activated.connect(_on_action_activated)
 	add_child(_hands)
@@ -72,9 +72,9 @@ func _process(delta: float) -> void:
 	for guiding in _guiding:
 		threat = maxf(threat, guiding.threat(_king.global_position))
 	context.effects.set_threat(threat)
-	if Input.is_action_just_pressed("jump_dash") and _at_escape_edge():
+	if Input.is_action_just_pressed("jump") and _at_escape_edge():
 		_escape()
-	_debug_label.text = "DEBUG phase 2  t=%d s  hands=%d  guiding=%d  threat=%.2f  pillars=%d  edge in %d tiles\nWASD move | Space dash (at the edge: jump down) | F3 +60s | F10 hide | R restart | [ ] pixel size" % [
+	_debug_label.text = "DEBUG phase 2  t=%d s  hands=%d  guiding=%d  threat=%.2f  pillars=%d  edge in %d tiles\nWASD move | Space jump (at the edge: jump down) | F3 +60s | F10 hide | R restart | [ ] pixel size" % [
 		int(_director.elapsed), _hands.hand_count(), _guiding.size(), threat, _field.pillar_count(), _tiles_to_edge()]
 
 

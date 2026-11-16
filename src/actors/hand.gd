@@ -6,7 +6,8 @@ extends Node3D
 ##
 ## Hands stand directly on the field. During the telegraph a ground hand (sweep, swipe, wall)
 ## already stands where it will act; a top-down hand (grab, punch) stays hidden and only its
-## shadow marks where it lands, then it drops in. There are no other warnings.
+## shadow marks where it lands. It then falls from above the top of the screen (DROPPING) and
+## the attack starts when it lands. There are no other warnings.
 ##
 ## Physics: while ACTIVE, a damaging action enables an Area3D on the hand_danger layer and a
 ## blocking action (wall) enables a StaticBody3D on the wall layer.
@@ -16,19 +17,20 @@ signal action_became_active(hand: Hand, command: HandCommand)
 signal action_finished(hand: Hand, command: HandCommand)
 signal command_refused(hand: Hand, command: HandCommand)
 
-enum State { IDLE, EMERGING, ACTIVE, RECOVERING }
+enum State { IDLE, EMERGING, DROPPING, ACTIVE, RECOVERING }
 
-## Top-down hands drop in from this height when the attack starts.
-const DROP_HEIGHT := 6.0
-## Seconds the drop takes at speed scale 1.
-const DROP_SECONDS := 0.15
+## Top-down hands fall from this many tiles up, which is above the top of the screen in both
+## phases.
+const DROP_TILES := 20.0
+## Seconds the fall takes at speed scale 1.
+const DROP_SECONDS := 0.35
 ## Shadow opacity at the start and end of the telegraph.
 const SHADOW_FAINT := 0.35
 const SHADOW_FULL := 0.85
 
 var state: State = State.IDLE
-## Phase 2: give the hand model a solid white outline.
-var outlined := false
+## Thickness of the hand model's white outline, set by Hands per phase.
+var outline_width := Placeholders.OUTLINE_WIDTH_BOARD
 
 var _command: HandCommand
 var _elapsed := 0.0
@@ -85,6 +87,13 @@ func tick(delta: float) -> void:
 	match state:
 		State.EMERGING:
 			if _elapsed >= _command.telegraph_time:
+				if _command.definition.from_above:
+					_enter(State.DROPPING)
+				else:
+					_enter(State.ACTIVE)
+					action_became_active.emit(self, _command)
+		State.DROPPING:
+			if _elapsed >= _drop_time():
 				_enter(State.ACTIVE)
 				action_became_active.emit(self, _command)
 		State.ACTIVE:
@@ -137,8 +146,7 @@ func _build_nodes() -> void:
 	var volume := definition.volume_size(_command)
 	if definition.shows_hand:
 		_visual = Placeholders.hand(definition.placeholder_name(), Vector3(volume.x, 0.3, volume.z))
-		if outlined:
-			Placeholders.add_outline(_visual)
+		Placeholders.add_outline(_visual, outline_width)
 		add_child(_visual)
 	if definition.from_above:
 		_shadow = Placeholders.shadow(Vector2(volume.x, volume.z))
@@ -180,20 +188,28 @@ func _update_visual() -> void:
 			if _shadow != null:
 				var progress := clampf(_elapsed / maxf(_command.telegraph_time, 0.001), 0.0, 1.0)
 				Placeholders.set_shadow_strength(_shadow, lerpf(SHADOW_FAINT, SHADOW_FULL, progress))
+		State.DROPPING:
+			position = _ground(definition.rest_position(_command))
+			# Accelerating fall onto the shadow.
+			var fall := clampf(_elapsed / _drop_time(), 0.0, 1.0)
+			drop = DROP_TILES * _command.tile_size * (1.0 - fall * fall)
+			if _shadow != null:
+				Placeholders.set_shadow_strength(_shadow, SHADOW_FULL)
 		State.ACTIVE:
 			position = _ground(definition.active_position(_command, _elapsed))
-			if definition.from_above:
-				var drop_time := DROP_SECONDS / _command.speed_scale
-				drop = DROP_HEIGHT * (1.0 - clampf(_elapsed / drop_time, 0.0, 1.0))
 		State.RECOVERING:
 			position = _ground(definition.active_position(_command, _command.active_time()))
 	if _shadow != null:
-		_shadow.visible = state == State.EMERGING or drop > 0.0
+		_shadow.visible = state == State.EMERGING or state == State.DROPPING
 	if _visual != null:
 		# Top-down hands are not on screen before their attack.
 		_visual.visible = not (definition.from_above and state == State.EMERGING)
 		_visual.position.y = drop
 	visible = true
+
+
+func _drop_time() -> float:
+	return DROP_SECONDS / _command.speed_scale
 
 
 func _ground(point: Vector3) -> Vector3:

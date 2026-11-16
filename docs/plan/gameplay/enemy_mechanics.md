@@ -29,9 +29,9 @@ These are the only warnings. There are no ground markers, labels or glow changes
 
 - Hands stand directly on the field, never floating above it.
 - **Ground hands** (side sweep, flat swipe, wall) appear on the field where they will act, wait for the telegraph, then act.
-- **Top-down hands** (grab, punch) are not on screen before the attack. During the telegraph only their shadow shows on the field where they will land; then the hand drops in.
-- **Void removal** has no visible hand. The pillars it will remove go completely dark with an outline for one second, then are pulled down.
-- In Phase 2 the king and every hand, including guiding hands, have a solid white outline that light and shadow do not affect.
+- **Top-down hands** (grab, punch) are not on screen before the attack. During the telegraph only their shadow shows on the field where they will land; then the hand falls from above the top of the screen onto the shadow, and the attack takes effect when it lands.
+- **Void removal** has no visible hand. The pillars it will remove go completely dark with an outline for one second, then are pulled down; the outline disappears as they go.
+- In both phases the king and every hand, including guiding hands and the capturing hand, have a solid white outline that light and shadow do not affect.
 
 ## Guiding missile hands
 
@@ -47,7 +47,7 @@ The product should turn independently readable actions into combinations without
 - Place walls to reduce viable dodge routes.
 - Send a swipe through the remaining open route.
 - Put a grab at a predicted exit point.
-- Destroy pillars beside or behind a dashing player.
+- Destroy pillars beside or behind a jumping player.
 - Use guiding missile pressure to steer the player toward active areas.
 
 The system must avoid unavoidable traps: action telegraphs, hand ownership, and the three-hand coordination ceiling preserve a skillful response window.

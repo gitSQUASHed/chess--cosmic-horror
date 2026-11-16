@@ -7,14 +7,14 @@ A chess game has ended. Only a king and two other pieces remain on the board. Th
 | Phase | Movement rule | Space | Primary pressure |
 |---|---|---|---|
 | 1 — The Board Cleanup | The king moves one tile in any of eight directions | A finite chessboard | A visible two-minute cleanup attack sequence |
-| 2 — Beyond the Board | Free movement and jump-dashing | A generated field of pillars and void holes | Escalating attacks and delayed pursuit |
+| 2 — Beyond the Board | Fast free movement and jumping | A generated field of pillars and void holes | Escalating attacks and delayed pursuit |
 
 ## Player rules
 
 - The player controls the king.
 - The king is randomly white or black at the start of a complete run.
 - In Phase 1, movement remains tile-clipped and obeys king movement: one tile, including diagonals, per move.
-- In Phase 2, movement is no longer grid-limited. The king can jump-dash narrow void gaps, with limited steering during the dash.
+- In Phase 2, movement is no longer grid-limited. The king moves fast and can jump narrow void gaps.
 - Hands are threats; being caught by one causes the capture ending.
 - Falling into the void causes the void ending.
 
