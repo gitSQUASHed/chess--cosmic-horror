@@ -18,7 +18,7 @@ Transitions between these moments are authored as camera, pixel-size, and effect
 
 - Light grain and static (a visible but restrained TV-style noise).
 - Preserve clean board readability and high contrast between chess squares.
-- Hand glow increases as a hand travels out of a rear silhouette toward the board, functioning as attack indication.
+- Hands keep a constant glow; attack warnings come only from the hand waiting on the board or a grab's shadow (see [attack warnings](../gameplay/enemy_mechanics.md#attack-warnings)).
 - The faint background clock and silhouettes remain readable enough to reward attention.
 
 ## Phase 2 treatment

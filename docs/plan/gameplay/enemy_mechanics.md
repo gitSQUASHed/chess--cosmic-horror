@@ -8,7 +8,7 @@ This document defines the product enemy vocabulary. Exact values are balancing p
 - A hand owns at most one action at a time. It cannot begin a second action until its current action ends.
 - Hands may act concurrently. Planned coordination may combine at most three hands in one deliberate setup.
 - A hand's action cooldown decreases as its phase progresses and never drops below zero.
-- Telegraph time is independent from cooldown and action duration. It also decreases over time, but never below 0.5 seconds.
+- Every action except the guiding missile hand has a telegraph of at least one second between the warning appearing and the attack. The telegraph never shrinks; instead, the attacks themselves get faster as the phase progresses (movement, strikes and recovery; walls keep their blocking time).
 - In Phase 2, simultaneous action centres may not occupy the same tile. Their effect areas may overlap.
 - A wall can only be placed while at least one other hand is performing a non-wall action.
 
@@ -22,6 +22,16 @@ This document defines the product enemy vocabulary. Exact values are balancing p
 | Flat swipe | Phase 2 | A 1×1 hand appears just inside the camera frame, slides in any direction or angle, and persists until it leaves the frame. | 3×1 swipe. |
 | Void removal | Phase 2 | Removes one tile pillar. | Removes a 2×2 tile area. |
 | Top-down punch | Phase 2 | Destroys one tile beneath the impact point. | Destroys a 3×3 tile area. |
+
+## Attack warnings
+
+These are the only warnings. There are no ground markers, labels or glow changes.
+
+- Hands stand directly on the field, never floating above it.
+- **Ground hands** (side sweep, flat swipe, wall) appear on the field where they will act, wait for the telegraph, then act.
+- **Top-down hands** (grab, punch) are not on screen before the attack. During the telegraph only their shadow shows on the field where they will land; then the hand drops in.
+- **Void removal** has no visible hand. The pillars it will remove go completely dark with an outline for one second, then are pulled down.
+- In Phase 2 the king and every hand, including guiding hands, have a solid white outline that light and shadow do not affect.
 
 ## Guiding missile hands
 

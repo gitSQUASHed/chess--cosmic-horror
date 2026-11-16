@@ -33,6 +33,7 @@ func setup(is_white: bool, camera_rig: CameraRig) -> void:
 	collision_layer = Layers.KING
 	collision_mask = Layers.PILLAR | Layers.WALL
 	_visual = Placeholders.king(is_white)
+	Placeholders.add_outline(_visual)
 	add_child(_visual)
 	var body_shape := CollisionShape3D.new()
 	var capsule := CapsuleShape3D.new()

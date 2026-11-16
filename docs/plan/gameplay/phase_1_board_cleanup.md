@@ -29,7 +29,7 @@ The dialogue should be sparse rather than continuous, and should not explain the
 
 ## Hand visual language
 
-Every hand is a glowing white celestial entity, never naturalistic human skin. Before an attack it emerges from a silhouette in the rear layer, then moves toward and over the foreground board. The hand brightens as it gets closer.
+Every hand is a glowing white celestial entity, never naturalistic human skin. Before an attack it appears on the board (or, for a grab, only its shadow does) and waits at least one second before acting, as described in [attack warnings](enemy_mechanics.md#attack-warnings).
 
 Each hand is a distinct entity. A hand can perform exactly one action at a time: it cannot begin a sweep, grab, or wall placement until its current action has resolved and recovered.
 
@@ -39,7 +39,7 @@ Each hand is a distinct entity. A hand can perform exactly one action at a time:
 | Curved/reaching hand from above | Grab attack |
 | Flat open hand from above | Temporary wall / blocked line |
 
-The background must telegraph attacks. The player should understand which attack is coming from the hand's direction, pose, brightness, and forward movement without coloured ground markers or HUD icons.
+The player should understand which attack is coming from the waiting hand's position and pose, or the grab's shadow, without coloured ground markers or HUD icons.
 
 ## Escalation schedule
 
@@ -48,6 +48,6 @@ The background must telegraph attacks. The player should understand which attack
 | 0:00–0:30 | One hand performs single-tile sweeps and 1×1 grabs. |
 | 0:30–1:00 | A second hand enters. It may place a temporary 1×1 wall only while another hand performs a non-wall action. |
 | 1:00–1:30 | Sweeps widen to three tiles, and grabs and walls become 3×1 lines. |
-| 1:30–2:00 | A third hand enters. Cooldown and telegraph time continue to decrease within their defined limits. |
+| 1:30–2:00 | A third hand enters. Cooldowns keep decreasing and attacks keep getting faster; the telegraph stays at one second. |
 
 At 2:00 the board begins to break apart, initiating the transition cutscene.

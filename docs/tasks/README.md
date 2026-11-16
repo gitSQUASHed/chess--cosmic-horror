@@ -42,3 +42,4 @@ Open tickets live in this folder. When a ticket is finished, move it to [`done/`
 | [T-20](done/T-20-real-model-integration.md) | Real model integration | all placeholder tickets |
 | [T-21](done/T-21-docs-and-project-map.md) | Docs and project map | all |
 | [T-22](T-22-phase2-reference-look.md) | Match Phase 2 to the reference image | T-19 |
+| [T-23](T-23-attack-warnings.md) | Attack warnings and grounded hands | T-22 |

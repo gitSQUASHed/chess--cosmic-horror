@@ -48,6 +48,8 @@ func _ready() -> void:
 	_hands.setup(context.run_config.rng)
 	_hands.forbid_shared_centers = true
 	_hands.placement_override = Callable(self, "_place")
+	_hands.outline_hands = true
+	_hands.action_telegraphed.connect(_on_action_telegraphed)
 	_hands.action_activated.connect(_on_action_activated)
 	add_child(_hands)
 	_director.setup(_hands, context.run_config.rng, context.upgrades)
@@ -121,7 +123,6 @@ func _place(definition: AttackDefinition, _hand_index: int) -> HandCommand:
 		command.anchor = target - (Vector2i(half, 0) if command.horizontal else Vector2i(0, half))
 	else:
 		command.anchor = target - Vector2i(int(definition.size / 2.0), int(definition.size / 2.0))
-	command.origin = definition.rest_position(command) + Vector3(0.0, 8.0 * TILE, 0.0)
 	return command
 
 
@@ -152,7 +153,6 @@ func _place_swipe(command: HandCommand, king_position: Vector3, right: Vector3, 
 	command.heading = atan2(command.direction.x, command.direction.z)
 	var travel := _exit_distance(spot, screen_dir, VIEW_RECT_TILES) + 2.0
 	command.active_override = travel / AttackDefinition.SWIPE_SPEED
-	command.origin = command.start - command.direction * 2.0 * TILE
 
 
 func _exit_distance(spot: Vector2, direction: Vector2, view: Rect2) -> float:
@@ -166,6 +166,12 @@ func _exit_distance(spot: Vector2, direction: Vector2, view: Rect2) -> float:
 	elif direction.y < -0.001:
 		distance = minf(distance, (view.position.y - spot.y) / direction.y)
 	return maxf(distance, 1.0) if distance != INF else 1.0
+
+
+## Void removal: the target pillars go dark with an outline for the telegraph, then sink.
+func _on_action_telegraphed(_hand: Hand, command: HandCommand) -> void:
+	if command.definition.kind == "void_removal":
+		_field.mark_area(command.anchor, command.definition.size)
 
 
 func _on_action_activated(_hand: Hand, command: HandCommand) -> void:

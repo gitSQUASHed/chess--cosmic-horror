@@ -16,7 +16,13 @@ const SWIPE_SPEED := 6.0
 @export var asset_name: String = ""
 ## Width of a sweep, length of a grab, wall or swipe line, side of a void/punch area.
 @export var size: int = 1
-@export var telegraph_base: float = 0.7
+## Seconds between appearing and attacking; Hands never uses less than Constants.MIN_TELEGRAPH.
+@export var telegraph_base: float = 1.0
+## Top-down attacks (grab, punch): the hand stays hidden before the attack and only its
+## shadow shows where it will land.
+@export var from_above: bool = false
+## False for attacks without a visible hand (void removal pulls from below).
+@export var shows_hand: bool = true
 @export var active_duration: float = 1.0
 @export var recovery: float = 0.35
 ## True if the active volume blocks the king (walls).
@@ -52,10 +58,10 @@ func rest_position(command: HandCommand) -> Vector3:
 func active_position(command: HandCommand, active_elapsed: float) -> Vector3:
 	var rest := rest_position(command)
 	if kind == "swipe":
-		return rest + command.direction * SWIPE_SPEED * command.tile_size * active_elapsed
+		return rest + command.direction * SWIPE_SPEED * command.speed_scale * command.tile_size * active_elapsed
 	if kind != "sweep":
 		return rest
-	var travel := active_elapsed * SWEEP_SPEED * command.tile_size
+	var travel := active_elapsed * SWEEP_SPEED * command.speed_scale * command.tile_size
 	match command.side:
 		"left":
 			return rest + Vector3(travel, 0.0, 0.0)

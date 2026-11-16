@@ -82,6 +82,20 @@ func update_around(center: Vector3) -> void:
 			_sink(cell)
 
 
+## Void removal warning: the pillars in the square go completely dark with a white outline
+## until remove_area pulls them down.
+func mark_area(first_tile: Vector2i, size: int) -> void:
+	for x in range(first_tile.x, first_tile.x + size):
+		for z in range(first_tile.y, first_tile.y + size):
+			var cell := Vector2i(x, z)
+			if not _pillars.has(cell):
+				continue
+			var pillar := _pillars[cell] as Node3D
+			pillar.set_meta("marked", true)
+			Placeholders.set_brightness(pillar, 0.0)
+			Placeholders.add_outline(pillar)
+
+
 ## Permanently removes a square of tiles (void removal and punch).
 func remove_area(first_tile: Vector2i, size: int) -> void:
 	for x in range(first_tile.x, first_tile.x + size):
@@ -98,7 +112,8 @@ func remove_tile(tile: Vector2i) -> void:
 	_disable_collision(pillar)
 	var tween := create_tween().set_parallel(true)
 	tween.tween_property(pillar, "position:y", -6.0, 1.2).set_ease(Tween.EASE_IN)
-	tween.tween_method(func(value: float) -> void: Placeholders.set_brightness(pillar, value), 1.0, 0.0, 1.2)
+	var from_brightness := 0.0 if pillar.has_meta("marked") else 1.0
+	tween.tween_method(func(value: float) -> void: Placeholders.set_brightness(pillar, value), from_brightness, 0.0, 1.2)
 	tween.chain().tween_callback(pillar.queue_free)
 
 

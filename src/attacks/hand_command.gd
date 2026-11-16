@@ -10,10 +10,13 @@ var anchor := Vector2i.ZERO
 var side := "left"
 ## Wall and swipe orientation (true = along x).
 var horizontal := true
-## Seconds the hand spends emerging before the action becomes active.
-var telegraph_time := 0.7
-## World position the hand emerges from, e.g. a rear silhouette.
-var origin := Vector3.ZERO
+## Seconds between the hand (or its shadow) appearing and the action becoming active.
+var telegraph_time := 1.0
+## Attack speed multiplier, rising with phase time. Speeds up movement, strikes and recovery,
+## never the telegraph.
+var speed_scale := 1.0
+## Height of the ground surface the hand stands on.
+var surface_y := 0.0
 ## Moving hands (swipe): where the hand starts, which way it slides, and its yaw.
 var start := Vector3.ZERO
 var direction := Vector3.ZERO
@@ -26,4 +29,13 @@ var active_override := -1.0
 
 
 func active_time() -> float:
-	return active_override if active_override > 0.0 else definition.active_duration
+	if active_override > 0.0:
+		return active_override / speed_scale
+	# A wall's duration is how long it blocks, not how fast it moves.
+	if definition.blocks_movement:
+		return definition.active_duration
+	return definition.active_duration / speed_scale
+
+
+func recovery_time() -> float:
+	return definition.recovery / speed_scale

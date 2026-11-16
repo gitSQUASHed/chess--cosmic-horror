@@ -20,7 +20,7 @@ Actions: `sweep`, `grabbing`, `wall`, `swipe`, `void-removal`, `punch`.
 
 ## Conventions
 
-- The model origin is the centre of its base on the ground. Hands hover at a fixed height above their origin.
+- The model origin is the centre of its base on the ground. Hands stand on the ground at their origin; top-down hands drop in from above when they attack.
 - Physics shapes are not part of the models. Gameplay volumes come from the attack definitions.
 - If a file is missing or fails to load, the named placeholder is used.
 

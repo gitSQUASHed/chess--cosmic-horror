@@ -7,7 +7,9 @@ const PHASE_ONE_SECONDS := 120.0
 const PHASE_TWO_ENDURANCE_SECONDS := 600.0
 ## The planned long-run target is about 500 tiles; kept short so a full run is testable.
 const PHASE_TWO_ESCAPE_TILES := 60
-const MIN_TELEGRAPH := 0.5
+## Seconds between a hand appearing (or its shadow / marked tile) and its attack. Never shorter,
+## and it does not shrink over time; attacks get faster through Hands.speed_scale instead.
+const MIN_TELEGRAPH := 1.0
 const KING_MOVE_SECONDS := 0.14
 const KING_START_TILE := Vector2i(3, 4)
 ## Width of one Phase 2 tile pillar in metres. Twice a Phase 1 board tile: the field is easier

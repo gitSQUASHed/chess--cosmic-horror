@@ -37,7 +37,8 @@ func _ready() -> void:
 	add_child(_silhouettes)
 	_hands = Hands.new()
 	_hands.setup(context.run_config.rng)
-	_hands.origins = _silhouettes.origins()
+	# Board tiles are 0.2 tall with their top at y 0.1.
+	_hands.surface_y = 0.1
 	add_child(_hands)
 	context.effects.set_mode(ScreenEffects.Mode.PHASE_ONE)
 	_director.setup(_hands, context.run_config.rng)

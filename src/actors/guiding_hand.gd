@@ -24,6 +24,7 @@ func setup(chase_target: Node3D, start: Vector3) -> void:
 	target = chase_target
 	position = start
 	_visual = Placeholders.guiding_hand()
+	Placeholders.add_outline(_visual)
 	add_child(_visual)
 	var danger := Area3D.new()
 	danger.collision_layer = Layers.HAND_DANGER

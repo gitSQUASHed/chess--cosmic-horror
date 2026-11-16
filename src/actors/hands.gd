@@ -7,6 +7,8 @@ extends Node3D
 ## WHICH hand runs it, WHERE it goes and WHEN it may start.
 
 signal hand_count_changed(count: int)
+## Emitted when a hand starts an action, at the start of its telegraph (e.g. to mark pillars).
+signal action_telegraphed(hand: Hand, command: HandCommand)
 ## Emitted when any hand's action becomes active (e.g. to remove pillars).
 signal action_activated(hand: Hand, command: HandCommand)
 
@@ -15,12 +17,15 @@ const MAX_COMBO_HANDS := 3
 
 ## Seconds a hand waits after finishing an action before it may start the next one.
 var action_cooldown := 4.0
-## Seconds subtracted from every telegraph time. Telegraphs never drop below Constants.MIN_TELEGRAPH.
-var telegraph_reduction := 0.0
+## Attack speed multiplier set by the directors as the phase progresses. Telegraph times are
+## not affected.
+var speed_scale := 1.0
+## Height of the ground surface hands stand on.
+var surface_y := 0.0
+## Phase 2: hands get a solid white outline.
+var outline_hands := false
 ## Phase 2 rule: two simultaneous actions may not share an anchor tile.
 var forbid_shared_centers := false
-## World positions the hands emerge from (the rear silhouettes).
-var origins: Array[Vector3] = [Vector3(1.5, 0.0, -3.5), Vector3(6.5, 0.0, -3.5)]
 ## Phase 2: returns a placement for the request, or null to use the board placement.
 var placement_override: Callable = Callable()
 
@@ -46,6 +51,7 @@ func set_hand_count(count: int, new_hand_delay: float = 1.0) -> void:
 	while _hands.size() < _target_count:
 		var hand := Hand.new()
 		hand.action_finished.connect(_on_action_finished)
+		hand.action_started.connect(func(started: Hand, command: HandCommand) -> void: action_telegraphed.emit(started, command))
 		hand.action_became_active.connect(_on_action_activated)
 		add_child(hand)
 		_hands.append(hand)
@@ -128,6 +134,7 @@ func _assign_requests() -> void:
 			if forbid_shared_centers and _shares_center(command):
 				continue
 			_queue.remove_at(queue_index)
+			hand.outlined = outline_hands
 			hand.execute(command)
 			break
 
@@ -168,9 +175,9 @@ func _place(entry: Dictionary, hand_index: int) -> HandCommand:
 	if command == null:
 		command = _place_on_board(definition)
 	command.definition = definition
-	command.telegraph_time = maxf(Constants.MIN_TELEGRAPH, definition.telegraph_base - telegraph_reduction)
-	if command.origin == Vector3.ZERO and not origins.is_empty():
-		command.origin = origins[hand_index % origins.size()]
+	command.telegraph_time = maxf(Constants.MIN_TELEGRAPH, definition.telegraph_base)
+	command.speed_scale = speed_scale
+	command.surface_y = surface_y
 	return command
 
 

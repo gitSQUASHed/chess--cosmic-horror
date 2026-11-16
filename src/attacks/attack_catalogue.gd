@@ -26,19 +26,20 @@ static func _build(kind: String, level: int) -> AttackDefinition:
 		"sweep":
 			definition.asset_name = "sweep"
 			definition.size = 3 if upgraded else 1
-			definition.telegraph_base = 0.72
+			definition.telegraph_base = 1.0
 			definition.active_duration = 1.55
 			definition.recovery = 0.35
 		"grab":
 			definition.asset_name = "grabbing"
+			definition.from_above = true
 			definition.size = 3 if upgraded else 1
-			definition.telegraph_base = 0.92
+			definition.telegraph_base = 1.0
 			definition.active_duration = 0.48
 			definition.recovery = 0.4
 		"wall":
 			definition.asset_name = "wall"
 			definition.size = 3 if upgraded else 1
-			definition.telegraph_base = 0.7
+			definition.telegraph_base = 1.0
 			definition.active_duration = 3.7
 			definition.recovery = 0.3
 			definition.blocks_movement = true
@@ -46,21 +47,24 @@ static func _build(kind: String, level: int) -> AttackDefinition:
 		"swipe":
 			definition.asset_name = "swipe"
 			definition.size = 3 if upgraded else 1
-			definition.telegraph_base = 0.6
+			definition.telegraph_base = 1.0
 			definition.active_duration = 2.0
 			definition.recovery = 0.3
 		"void_removal":
 			definition.asset_name = "void-removal"
+			# Pulls pillars down from below: no hand on screen, the marked tiles are the warning.
+			definition.shows_hand = false
 			definition.size = 2 if upgraded else 1
 			definition.damages = false
-			definition.telegraph_base = 0.8
+			definition.telegraph_base = 1.0
 			definition.active_duration = 0.4
 			definition.recovery = 0.4
 		"punch":
 			definition.asset_name = "punch"
+			definition.from_above = true
 			definition.size = 3 if upgraded else 1
 			definition.damages = false
-			definition.telegraph_base = 0.8
+			definition.telegraph_base = 1.0
 			definition.active_duration = 0.4
 			definition.recovery = 0.4
 		_:

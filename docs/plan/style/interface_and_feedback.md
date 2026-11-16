@@ -7,7 +7,7 @@ The game is intentionally low-UI. Do not add a permanent health bar, score, mini
 ## Diegetic feedback
 
 - The Phase 1 chess clock is the only time reference, embedded in the scene.
-- Phase 1 attack telegraphing comes from hands moving and brightening as they emerge from background silhouettes.
+- Attack telegraphing follows [attack warnings](../gameplay/enemy_mechanics.md#attack-warnings): hands waiting on the field, shadows of top-down hands, dark outlined pillars for void removal, and white outlines on the king and hands in Phase 2.
 - Phase 2 pursuit is communicated through white illumination, static, fisheye, screen shake, and sound—not an enemy marker.
 - The state of pillars is communicated by their movement: rising to emerge, falling and darkening when removed.
 

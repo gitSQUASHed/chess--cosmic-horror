@@ -5,6 +5,8 @@ extends RefCounted
 ## Hands are red, the king is green, tiles and pillars are white/gray.
 
 const MODEL_DIR := "res://src/assets/models/"
+## Phase 2 outline thickness in metres (about one screen pixel cell at the Phase 2 zoom).
+const OUTLINE_WIDTH := 0.12
 
 
 ## Builds a placeholder (or the real model, if present) for `placeholder_name`.
@@ -91,6 +93,66 @@ static func set_brightness(model: Node3D, brightness: float) -> void:
 		else:
 			material.emission_enabled = brightness > 1.0
 			material.emission = base
+
+
+## Adds a solid white outline to every mesh of `model` (placeholder or real model): an unshaded,
+## front-culled hull slightly larger than the mesh, so lights and shadows never affect it.
+static func add_outline(model: Node3D, width: float = OUTLINE_WIDTH) -> void:
+	if model.has_meta("outlined"):
+		return
+	model.set_meta("outlined", true)
+	var material := StandardMaterial3D.new()
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.albedo_color = Color.WHITE
+	material.cull_mode = BaseMaterial3D.CULL_FRONT
+	var meshes: Array[MeshInstance3D] = []
+	_collect_meshes(model, meshes)
+	for source in meshes:
+		if source.mesh == null:
+			continue
+		var bounds := source.mesh.get_aabb()
+		var hull := MeshInstance3D.new()
+		hull.name = "Outline"
+		hull.mesh = source.mesh
+		hull.material_override = material
+		hull.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		var grow := Vector3.ONE
+		for axis in range(3):
+			if bounds.size[axis] > 0.001:
+				grow[axis] = (bounds.size[axis] + 2.0 * width) / bounds.size[axis]
+		var centre := bounds.get_center()
+		hull.transform = Transform3D(Basis.from_scale(grow), centre - centre * grow)
+		source.add_child(hull)
+
+
+static func _collect_meshes(node: Node, result: Array[MeshInstance3D]) -> void:
+	if node is MeshInstance3D and node.name != "Outline":
+		result.append(node as MeshInstance3D)
+	for child in node.get_children():
+		_collect_meshes(child, result)
+
+
+## Flat dark patch on the ground where a top-down hand will land. `size` is (x, z) in metres.
+static func shadow(size: Vector2) -> MeshInstance3D:
+	var plane := PlaneMesh.new()
+	plane.size = size
+	var material := StandardMaterial3D.new()
+	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	material.albedo_color = Color(0.0, 0.0, 0.0, 0.5)
+	var patch := MeshInstance3D.new()
+	patch.name = "Shadow"
+	patch.mesh = plane
+	patch.material_override = material
+	patch.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	patch.position.y = 0.02
+	return patch
+
+
+static func set_shadow_strength(patch: MeshInstance3D, alpha: float) -> void:
+	var material := patch.material_override as StandardMaterial3D
+	if material != null:
+		material.albedo_color.a = clampf(alpha, 0.0, 1.0)
 
 
 static func king(is_white: bool) -> Node3D:
