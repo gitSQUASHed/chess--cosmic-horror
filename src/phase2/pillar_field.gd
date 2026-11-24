@@ -7,8 +7,16 @@ extends Node3D
 
 signal void_entered(body: Node3D)
 
-## Share of tiles that are holes.
-const HOLE_CHANCE := 0.19
+## Holes come from smooth value noise instead of independent per-tile chances, so they form
+## connected blobs (about 2 to 8 tiles across) rather than scattered single tiles. A tile is a
+## hole where the noise is below HOLE_THRESHOLD; with these values about 18% of tiles are holes.
+## Tiles per noise cell of the large blobs.
+const HOLE_SCALE := 6.0
+## Tiles per noise cell of the detail layer that roughens blob edges.
+const HOLE_DETAIL_SCALE := 2.5
+## Weight of the detail layer (0 = smooth round blobs).
+const HOLE_DETAIL_WEIGHT := 0.3
+const HOLE_THRESHOLD := 0.34
 ## Tiles around the start that are always solid.
 const SAFE_RADIUS := 2
 const SURFACE_Y := 0.0
@@ -61,7 +69,7 @@ func is_solid(tile: Vector2i) -> bool:
 		return true
 	if _spine.has(tile):
 		return true
-	return _noise(tile) > HOLE_CHANCE
+	return _hole_noise(tile) >= HOLE_THRESHOLD
 
 
 ## Reveals pillars near `center` and hides far ones. Cheap when the king stays on one tile.
@@ -173,6 +181,28 @@ func _spawn(cell: Vector2i) -> void:
 	_pillars[cell] = pillar
 	var tween := create_tween()
 	tween.tween_property(pillar, "position:y", SURFACE_Y - PILLAR_HEIGHT, 0.6 + _noise(cell + Vector2i(31, 17)) * 0.4).set_ease(Tween.EASE_OUT)
+
+
+## Two layers of value noise in 0..1, deterministic per seed and tile.
+func _hole_noise(tile: Vector2i) -> float:
+	var large := _value_noise(Vector2(tile), HOLE_SCALE, 7919)
+	var detail := _value_noise(Vector2(tile), HOLE_DETAIL_SCALE, 104729)
+	return lerpf(large, detail, HOLE_DETAIL_WEIGHT)
+
+
+## Smoothly interpolated random values on a grid of `scale` tiles; `salt` separates layers.
+func _value_noise(point: Vector2, scale: float, salt: int) -> float:
+	var scaled := point / scale
+	var cell := Vector2i(floori(scaled.x), floori(scaled.y))
+	var fraction := scaled - Vector2(cell)
+	var tx := fraction.x * fraction.x * (3.0 - 2.0 * fraction.x)
+	var ty := fraction.y * fraction.y * (3.0 - 2.0 * fraction.y)
+	var offset := Vector2i(salt, salt * 7)
+	var a := _noise(cell + offset)
+	var b := _noise(cell + Vector2i(1, 0) + offset)
+	var c := _noise(cell + Vector2i(0, 1) + offset)
+	var d := _noise(cell + Vector2i(1, 1) + offset)
+	return lerpf(lerpf(a, b, tx), lerpf(c, d, tx), ty)
 
 
 func _noise(tile: Vector2i) -> float:
