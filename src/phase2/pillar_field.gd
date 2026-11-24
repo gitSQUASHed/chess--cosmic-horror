@@ -154,7 +154,7 @@ func pillar_count() -> int:
 
 
 func _spawn(cell: Vector2i) -> void:
-	var pillar := Placeholders.pillar(TILE_SIZE, PILLAR_HEIGHT)
+	var pillar := Placeholders.pillar(TILE_SIZE, PILLAR_HEIGHT, SURFACE_Y)
 	var shade := 0.82 + 0.18 * _noise(cell + Vector2i(7919, 104729))
 	Placeholders.set_brightness(pillar, shade)
 	var body := StaticBody3D.new()

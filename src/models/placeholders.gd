@@ -4,6 +4,7 @@ extends RefCounted
 ## Hands are red, the king is green, tiles and pillars are white/gray.
 
 const MODEL_DIR := "res://src/assets/models/"
+const PILLAR_SHADER := preload("res://src/models/pillar.gdshader")
 ## Outline thickness in metres, about one screen pixel cell at each phase's zoom.
 const OUTLINE_WIDTH_BOARD := 0.05
 const OUTLINE_WIDTH_FIELD := 0.12
@@ -58,6 +59,9 @@ static func try_real_model(placeholder_name: String) -> Node3D:
 
 static func set_brightness(model: Node3D, brightness: float) -> void:
 	var body := model.get_node_or_null("Body") as MeshInstance3D
+	if body != null and body.material_override is ShaderMaterial:
+		(body.material_override as ShaderMaterial).set_shader_parameter("brightness", brightness)
+		return
 	if body != null and body.material_override is StandardMaterial3D:
 		var material := body.material_override as StandardMaterial3D
 		if not model.has_meta("base_colour"):
@@ -203,8 +207,18 @@ static func tile(is_light: bool) -> Node3D:
 
 ## A cube-like pillar: `width` is the tile size in metres (a small gap leaves visible seams),
 ## `height` its full height so its top lines up with the collision box.
-static func pillar(width: float = 1.0, height: float = 1.0) -> Node3D:
-	return make("pillar", "box", Vector3(width * 0.94, height, width * 0.94), Palette.PILLAR)
+## Its sides fade into the void colour below `surface_y` (pillar.gdshader).
+static func pillar(width: float = 1.0, height: float = 1.0, surface_y: float = 0.0) -> Node3D:
+	var model := make("pillar", "box", Vector3(width * 0.94, height, width * 0.94), Palette.PILLAR)
+	var body := model.get_node_or_null("Body") as MeshInstance3D
+	if body != null:
+		var material := ShaderMaterial.new()
+		material.shader = PILLAR_SHADER
+		material.set_shader_parameter("albedo", Palette.PILLAR)
+		material.set_shader_parameter("mist_color", Palette.VOID_BLACK)
+		material.set_shader_parameter("surface_y", surface_y)
+		body.material_override = material
+	return model
 
 
 static func wall_segment() -> Node3D:

@@ -5,13 +5,6 @@ extends Node3D
 
 signal finished(result: String)
 
-## Depth mist: how quickly everything below the pillar tops fades into the void colour (per
-## metre). Pillar sides sink into darkness (about 0.96 at the base of a 2 m pillar), so holes
-## read as dark gaps.
-const MIST_DENSITY := 1.6
-## The mist starts just below the pillar tops so their top edges stay lit.
-const MIST_TOP := -0.05
-
 ## Metres per Phase 2 tile.
 const TILE := Constants.PHASE2_TILE_SIZE
 ## Visible ground area around the king, in camera-aligned tiles (x across, y down the screen).
@@ -38,7 +31,6 @@ func setup(game_context: GameContext) -> void:
 
 
 func _ready() -> void:
-	_set_depth_mist(true)
 	var start := PillarField.tile_to_world(Vector2i.ZERO) + Vector3(0.0, 8.0, 0.0)
 	context.camera.release()
 	context.camera.snap_to(CameraRig.phase_two_pose(PillarField.tile_to_world(Vector2i.ZERO)))
@@ -69,33 +61,13 @@ func _ready() -> void:
 	_build_debug_label()
 
 
-func _exit_tree() -> void:
-	_set_depth_mist(false)
-
-
-## Height fog below the pillar surface, in the void colour. Nothing above the surface (king,
-## hands) is affected.
-func _set_depth_mist(enabled: bool) -> void:
-	var environment := context.environment
-	if environment == null:
-		return
-	environment.fog_enabled = enabled
-	environment.fog_light_color = Palette.VOID_BLACK
-	environment.fog_light_energy = 1.0
-	environment.fog_density = 0.0
-	environment.fog_height = PillarField.SURFACE_Y + MIST_TOP
-	environment.fog_height_density = MIST_DENSITY
-	environment.fog_sky_affect = 0.0
-	environment.fog_aerial_perspective = 0.0
-
-
 func _process(delta: float) -> void:
 	if _ended:
 		return
 	_director.tick(delta)
 	_hands.tick(delta)
 	_field.update_around(_king.global_position)
-	# Falling into a hole: the camera stays at the surface so the king visibly drops into the mist.
+	# Falling into a hole: the camera stays at the surface so the king visibly drops into the dark.
 	if not _falling and _king.global_position.y < PillarField.SURFACE_Y - 0.5:
 		_falling = true
 		context.camera.release()
