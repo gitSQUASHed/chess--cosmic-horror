@@ -9,7 +9,7 @@ Godot 4 (3D) cosmic-horror survival game: a chess king survives hands that clear
 | Path | Purpose |
 |---|---|
 | `src/main.tscn` | Main scene; its script is `GameFlow` |
-| `src/core/` | `GameFlow` (state machine), `GameContext`, `RunConfig`, `Constants`, `Layers` (physics layers), `Palette`, `CameraRig`, `InputSetup`, `AttackToggles` |
+| `src/core/` | `GameFlow` (state machine), `GameContext`, `RunConfig`, `Constants`, `Layers` (physics layers), `Palette`, `CameraRig`, `InputSetup`, `GameConfig` (reads `config/`), `AttackToggles` |
 | `src/actors/` | `Hand` (single-action command executor), `Hands` (organiser), `GuidingHand` |
 | `src/attacks/` | `AttackDefinition` and `AttackCatalogue` (all attack data), `HandCommand` |
 | `src/models/` | `Placeholders` (the single model factory), `ModelAnimator` |
@@ -18,7 +18,7 @@ Godot 4 (3D) cosmic-horror survival game: a chess king survives hands that clear
 | `src/fx/` | `screen.gdshader`, `PixelationLayer`, `ScreenEffects`, `Presets` |
 | `src/ui/` | `Textbox`, cutscenes, `CutsceneRunner`, `StubState` |
 | `src/assets/models/` | Real models (see its README for names) |
-| `config/attacks.cfg` | Debug switches: enable or disable each attack per phase (`AttackToggles`) |
+| `config/` | Editable settings, re-read at every run start (R): `attacks.cfg` switches attacks on or off per phase, `field.cfg` sets the Phase 2 field size, `schedule.cfg` sets when hands and each attack appear and upgrade, `timing.cfg` sets the cooldown, telegraph and attack-speed ramps |
 | `docs/plan/` | Product design | 
 | `docs/tasks/` | Tickets; move finished ones to `done/` |
 | `tests/mvp/` | Untouched 2D prototype |
@@ -36,7 +36,7 @@ Godot 4 (3D) cosmic-horror survival game: a chess king survives hands that clear
 ## Entry points
 
 - Add or change an attack: `src/attacks/attack_catalogue.gd`, then request it from a director and, if it needs special placement, handle it in `Hands._place_on_board` or Phase 2's `_place`.
-- Change a phase schedule: `src/phase1/phase1_director.gd` or `src/phase2/phase2_director.gd`.
+- Change a phase schedule: the timings in `config/schedule.cfg`; the logic (intervals, speed ramp, defaults) in `src/phase1/phase1_director.gd` or `src/phase2/phase2_director.gd`.
 - Add a screen effect: a uniform in `src/fx/screen.gdshader`, then drive it in `src/fx/screen_effects.gd`.
 - Add a cutscene: `src/ui/cutscenes.gd`.
 - Replace a placeholder: drop a model into `src/assets/models/` (naming in its README).
@@ -45,7 +45,7 @@ Godot 4 (3D) cosmic-horror survival game: a chess king survives hands that clear
 
 - Run: open the project in Godot 4.3 or newer and press Run (main scene is `src/main.tscn`).
 - Syntax check without Godot: `pip install gdtoolkit` then `gdparse src/*/*.gd`.
-- Turn attacks off for testing: set them to `false` in `config/attacks.cfg`, then restart the run (R).
+- Tune without code: edit a file in `config/`, then restart the run (R). Attack on/off in `attacks.cfg`, field size in `field.cfg`, hand and attack timings in `schedule.cfg`, cooldown, telegraph and speed in `timing.cfg`.
 - Debug keys: R restart, F2 jump to Phase 2, F3 skip time, F10 hide debug text, `[`/`]` pixel size, F5 to F8 toggle vignette, grain and static, fisheye, bloom, F9 toggles the green palette.
 
 ## Style

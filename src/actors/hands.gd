@@ -20,6 +20,8 @@ var action_cooldown := 4.0
 ## Attack speed multiplier set by the directors as the phase progresses. Telegraph times are
 ## not affected.
 var speed_scale := 1.0
+## Seconds between a hand's warning and its attack, set by the directors.
+var telegraph_time := 1.0
 ## Height of the ground surface hands stand on.
 var surface_y := 0.0
 ## Thickness of the white outline every hand gets (Placeholders.OUTLINE_WIDTH_*).
@@ -165,7 +167,7 @@ func _place(entry: Dictionary, hand_index: int) -> HandCommand:
 	if command == null:
 		command = _place_on_board(definition)
 	command.definition = definition
-	command.telegraph_time = maxf(Constants.MIN_TELEGRAPH, definition.telegraph_base)
+	command.telegraph_time = telegraph_time
 	command.speed_scale = speed_scale
 	command.surface_y = surface_y
 	return command

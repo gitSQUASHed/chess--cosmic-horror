@@ -7,5 +7,3 @@ var camera: CameraRig
 var pixelation: PixelationLayer
 var effects: ScreenEffects
 var flow: GameFlow
-## Hand upgrade levels carried from Phase 1 into Phase 2.
-var upgrades := {"sweep": 1, "punch": 1}

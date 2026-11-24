@@ -4,7 +4,8 @@ extends RefCounted
 ## docs/plan/gameplay/endings.md. `props` lists placeholder models staged on screen. The
 ## optional `stage` "board" stages the scene on the Phase 1 chessboard. The
 ## optional `actions` maps a line index to what happens on stage when that line appears, e.g.
-## ["snatch", "piece_a", "piece_b"]: a hand comes down and takes each named prop in turn.
+## ["snatch", "piece_a", "piece_b"]: a hand comes down and takes each named prop in turn;
+## ["move", "king", Vector3(...), seconds]: the prop falls to that position.
 
 
 static func get_cutscene(cutscene_name: String) -> Dictionary:
@@ -34,7 +35,12 @@ static func get_cutscene(cutscene_name: String) -> Dictionary:
 		"ending_void":
 			return {"props": [], "lines": ["Far above: Where did the king go? Anyway, let's go downstairs."]}
 		"ending_escaped":
-			return {"props": [["clock", Vector3(4.0, 0.0, 4.0)], ["king", Vector3(4.0, 3.0, 4.0)]], "lines": ["King: Now it's my turn."]}
+			return {
+				"props": [["clock", Vector3(4.0, 0.0, 4.0)], ["king", Vector3(4.0, 3.0, 4.0)]],
+				"lines": ["King: Now it's my turn."],
+				# The king drops onto the clock's top (the clock is 2 m tall).
+				"actions": {0: [["move", "king", Vector3(4.0, 2.0, 4.0), 0.5]]},
+			}
 		"ending_endurance":
 			return {"props": [], "lines": ["Far above: Yeah, let's just clean up later."]}
 		_:

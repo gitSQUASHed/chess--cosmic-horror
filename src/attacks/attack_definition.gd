@@ -26,8 +26,6 @@ const EFFECT_GRAB := "grab"
 @export var asset_name: String = ""
 ## Width of a sweep, length of a swipe line, side of a punch, void-removal or smash square.
 @export var size: int = 1
-## Seconds between appearing and attacking; Hands never uses less than Constants.MIN_TELEGRAPH.
-@export var telegraph_base: float = 1.0
 ## Top-down attacks (punch, smash): the hand stays hidden before the attack and only its
 ## shadow shows where it will land.
 @export var from_above: bool = false

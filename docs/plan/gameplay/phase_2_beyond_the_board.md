@@ -37,6 +37,6 @@ All hands remain white, glowing celestial entities. Phase 2 attacks have less ex
 
 There is no Phase 2 arrow, terrain-colour gradient, distance counter, or other explicit indication of the escape route. The intended direction must be remembered from the side the Phase 1 chess clock was shifted toward.
 
-The escape edge lies 500 tiles away in the correct horizontal direction (`Constants.PHASE_TWO_ESCAPE_TILES`). This value is a balancing target and may change after playtesting. Reaching the edge lets the king jump down and triggers the chess-clock ending.
+The field is a square of 500 × 500 tiles centred on the landing tile (`size` in `config/field.cfg`). Beyond its borders, 250 tiles away on both axes, there is only void. The escape edge is the border in the correct horizontal direction. There, the Phase 1 chess clock floats huge in the void below the field, in view once the king comes close. Jumping off the edge lands the king on top of it and triggers the chess-clock ending.
 
 The player can also survive for ten minutes for the endurance ending.

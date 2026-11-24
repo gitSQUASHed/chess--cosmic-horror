@@ -52,7 +52,7 @@ func setup(run_seed: int, escape_direction: int) -> void:
 
 ## x coordinate of the escape edge column.
 func edge_x() -> int:
-	return escape_side * Constants.PHASE_TWO_ESCAPE_TILES
+	return escape_side * GameConfig.field_half_size()
 
 
 static func world_to_tile(position_3d: Vector3) -> Vector2i:
@@ -68,11 +68,13 @@ static func tile_to_world(tile: Vector2i) -> Vector3:
 func is_solid(tile: Vector2i) -> bool:
 	if _removed.has(tile):
 		return false
-	if absi(tile.x) > Constants.PHASE_TWO_ESCAPE_TILES and _beyond_edge(tile.x):
+	# The field is a square of config/field.cfg size; beyond its borders is void on every side.
+	var half := GameConfig.field_half_size()
+	if absi(tile.x) > half or absi(tile.y) > half:
 		return false
 	if absi(tile.x) <= SAFE_RADIUS and absi(tile.y) <= SAFE_RADIUS:
 		return true
-	if absi(tile.x) == Constants.PHASE_TWO_ESCAPE_TILES and tile.x == edge_x():
+	if tile.x == edge_x():
 		return true
 	if _spine.has(tile):
 		return true
@@ -265,16 +267,12 @@ func _noise(tile: Vector2i) -> float:
 	return float(h & 0x7fffffff) / 2147483647.0
 
 
-func _beyond_edge(x: int) -> bool:
-	return x * escape_side > Constants.PHASE_TWO_ESCAPE_TILES
-
-
 ## A guaranteed route of solid tiles from the start to the escape edge: a deterministic walk
 ## that changes row by at most one per column and joins diagonal steps orthogonally.
 func _build_spine() -> void:
 	_spine.clear()
 	var row := 0
-	for step in range(Constants.PHASE_TWO_ESCAPE_TILES + 1):
+	for step in range(GameConfig.field_half_size() + 1):
 		var x := escape_side * step
 		_spine[Vector2i(x, row)] = true
 		var choice := int(_noise(Vector2i(step, 99991)) * 3.0) - 1
@@ -292,7 +290,8 @@ func _build_void_area() -> void:
 	area.monitorable = false
 	var shape_node := CollisionShape3D.new()
 	var shape := BoxShape3D.new()
-	shape.size = Vector3(4000.0, 2.0, 4000.0)
+	var extent := (GameConfig.field_size() + 40) * TILE_SIZE
+	shape.size = Vector3(extent, 2.0, extent)
 	shape_node.shape = shape
 	# Deep enough that a falling king stays visible for about a second as he sinks into the mist.
 	area.position = Vector3(0.0, -16.0, 0.0)

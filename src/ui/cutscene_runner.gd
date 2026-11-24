@@ -60,9 +60,14 @@ func _ready() -> void:
 
 func _on_line_shown(index: int) -> void:
 	for action in _actions.get(index, []):
-		if String(action[0]) == "snatch":
-			for order in range(1, action.size()):
-				_snatch(String(action[order]), (order - 1) * SNATCH_STAGGER)
+		match String(action[0]):
+			"snatch":
+				for order in range(1, action.size()):
+					_snatch(String(action[order]), (order - 1) * SNATCH_STAGGER)
+			"move":
+				var prop := _props.get(String(action[1])) as Node3D
+				if prop != null:
+					create_tween().tween_property(prop, "position", action[2], float(action[3])).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
 
 
 ## A hand comes straight down onto the prop, closes on it and lifts it out of the frame.

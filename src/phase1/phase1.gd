@@ -56,8 +56,8 @@ func _process(delta: float) -> void:
 	_hands.tick(delta)
 	_king.update(_grid_input())
 	Placeholders.set_clock_time(_clock, _format_time(Constants.PHASE_ONE_SECONDS - _director.elapsed))
-	_debug_label.text = "DEBUG phase 1  t=%s  hands=%d  queue=%d  attack level=%d\nWASD/arrows move | F3 +30s | F10 hide | R restart | [ ] pixel size | F2 phase 2" % [
-		_format_time(_director.elapsed), _hands.hand_count(), _hands.queue_size(), _director.attack_level()]
+	_debug_label.text = "DEBUG phase 1  t=%s  hands=%d  queue=%d  levels sweep=%d punch=%d\nWASD/arrows move | F3 +30s | F10 hide | R restart | [ ] pixel size | F2 phase 2" % [
+		_format_time(_director.elapsed), _hands.hand_count(), _hands.queue_size(), _director.level_for("sweep"), _director.level_for("punch")]
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -148,7 +148,6 @@ func _on_director_finished() -> void:
 	_ended = true
 	_hands.clear()
 	_king.freeze()
-	context.upgrades = {"sweep": 2, "punch": 2}
 	_play_collapse()
 
 

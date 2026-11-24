@@ -20,5 +20,5 @@
 ## Escape space
 
 - The correct escape direction is the horizontal side the Phase 1 chess clock is shifted toward.
-- The final product targets an escape edge roughly 500 tiles away; its exact distance remains a balance parameter.
+- The field is bounded on all four sides, with void beyond; its size is a balance parameter in `config/field.cfg` (500 tiles per side, so the escape edge is 250 tiles away).
 - The field must provide risky but possible routes to that edge rather than an explicit route marker.

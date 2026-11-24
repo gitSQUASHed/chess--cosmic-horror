@@ -13,14 +13,12 @@ var elapsed := 0.0
 
 var _hands: Hands
 var _rng: RandomNumberGenerator
-var _upgrades: Dictionary
 var _done := false
 
 
-func setup(hands: Hands, rng: RandomNumberGenerator, upgrades: Dictionary) -> void:
+func setup(hands: Hands, rng: RandomNumberGenerator) -> void:
 	_hands = hands
 	_rng = rng
-	_upgrades = upgrades
 	_apply_schedule()
 
 
@@ -39,56 +37,38 @@ func tick(delta: float) -> void:
 		endurance_reached.emit()
 
 
+## Attacks this phase can request, with their default first time and upgrade time (seconds).
+## Punch and swipe start upgraded: Phase 2 carries forward the Phase 1 upgrades.
+const ATTACKS := {
+	"swipe": [0.0, 0.0],
+	"punch": [0.0, 0.0],
+	"void_removal": [60.0, 120.0],
+	"smash": [60.0, 120.0],
+}
+
+
+## Hand counts and attack timings come from config/schedule.cfg [phase2].
 func hand_target() -> int:
-	if elapsed < 30.0:
-		return 2
-	if elapsed < 90.0:
-		return 3
-	if elapsed < 120.0:
-		return 4
-	if elapsed < 150.0:
-		return 5
-	if elapsed < 180.0:
-		return 6
-	return 7
+	return GameConfig.count_reached("phase2", "hands_at", [0, 0, 30, 90, 120, 150, 180], elapsed)
 
 
 func guiding_hands_wanted() -> int:
-	if elapsed < 60.0:
-		return 0
-	if elapsed < 180.0:
-		return 1
-	return 2
+	return GameConfig.count_reached("phase2", "guiding_hands_at", [60, 180], elapsed)
 
 
 func _apply_schedule() -> void:
 	var target := hand_target()
 	if target != _hands.hand_count():
 		_hands.set_hand_count(target, FIRST_HAND_DELAY if _hands.hand_count() == 0 else LATER_HAND_DELAY)
-	_hands.action_cooldown = _action_interval()
-	# Attacks run at the Phase 2 speed multiplier and speed up a further 1.5x over 7.5 minutes;
-	# the telegraph stays fixed.
-	_hands.speed_scale = Constants.PHASE2_HAND_SPEED_MULTIPLIER * (1.0 + minf(elapsed / 450.0, 1.0) * 0.5)
-
-
-func _action_interval() -> float:
-	if elapsed < 30.0:
-		return 4.2
-	if elapsed < 60.0:
-		return 3.2
-	if elapsed < 120.0:
-		return 2.25
-	if elapsed < 180.0:
-		return 1.55
-	return maxf(0.0, 1.0 - (elapsed - 180.0) / 180.0)
+	# Cooldown, telegraph and attack speed ramp as set in config/timing.cfg [phase2].
+	_hands.action_cooldown = GameConfig.ramp("phase2", "cooldown", "max", "min", [4.2, 0.0, 360.0], elapsed)
+	_hands.telegraph_time = GameConfig.ramp("phase2", "telegraph", "max", "min", [1.0, 1.0, 450.0], elapsed)
+	_hands.speed_scale = GameConfig.ramp("phase2", "speed", "min", "max", [2.0, 3.0, 450.0], elapsed)
 
 
 func _stock_queue() -> void:
 	while _hands.queue_size() < _hands.hand_count() + 1:
-		var options: Array[String] = ["swipe", "punch"]
-		if elapsed >= 60.0:
-			options.append_array(["void_removal", "smash"])
-		options = AttackToggles.filter("phase2", options)
+		var options := AttackToggles.filter("phase2", _available())
 		if options.is_empty():
 			return
 		var kind := options[_rng.randi_range(0, options.size() - 1)]
@@ -96,10 +76,14 @@ func _stock_queue() -> void:
 
 
 func _level_for(kind: String) -> int:
-	match kind:
-		"swipe":
-			return 2
-		"punch":
-			return int(_upgrades.get("punch", 2))
-		_:
-			return 2 if elapsed >= 120.0 else 1
+	var upgrade_at := GameConfig.attack_upgrade_at("phase2", kind, float(ATTACKS[kind][1]))
+	return 2 if upgrade_at >= 0.0 and elapsed >= upgrade_at else 1
+
+
+func _available() -> Array[String]:
+	var result: Array[String] = []
+	for kind in ATTACKS:
+		var from := GameConfig.attack_from("phase2", kind, float(ATTACKS[kind][0]))
+		if from >= 0.0 and elapsed >= from:
+			result.append(String(kind))
+	return result

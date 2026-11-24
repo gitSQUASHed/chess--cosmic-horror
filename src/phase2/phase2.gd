@@ -5,6 +5,12 @@ extends Node3D
 
 signal finished(result: String)
 
+## The chess clock floats in the void past the escape edge: this much larger than in Phase 1,
+## its top CLOCK_DROP metres below the field and CLOCK_GAP metres out from the edge.
+const CLOCK_SCALE := 6.0
+const CLOCK_DROP := 5.0
+const CLOCK_GAP := 6.0
+
 ## Metres per Phase 2 tile.
 const TILE := Constants.PHASE2_TILE_SIZE
 ## Visible ground area around the king, in camera-aligned tiles (x across, y down the screen).
@@ -23,6 +29,7 @@ var _director := Phase2Director.new()
 var _guiding: Array[GuidingHand] = []
 var _ended := false
 var _falling := false
+var _clock: Node3D
 var _debug_label: Label
 
 
@@ -54,9 +61,10 @@ func _ready() -> void:
 	_hands.action_telegraphed.connect(_on_action_telegraphed)
 	_hands.action_activated.connect(_on_action_activated)
 	add_child(_hands)
-	_director.setup(_hands, context.run_config.rng, context.upgrades)
+	_director.setup(_hands, context.run_config.rng)
 	_director.endurance_reached.connect(func() -> void: _finish_with_fade("endurance"))
 	_field.update_around(start)
+	_build_clock()
 	context.pixelation.set_fade(1.0)
 	context.pixelation.animate_fade(0.0, 1.2)
 	# The board-collapse fall left the pixels large (Presets.FALL); they settle back while the
@@ -73,6 +81,7 @@ func _process(delta: float) -> void:
 	_director.tick(delta)
 	_hands.tick(delta)
 	_field.update_around(_king.global_position)
+	_follow_clock()
 	# Falling into a hole: the camera stays at the surface so the king visibly drops into the dark.
 	# Only over a hole: a king riding a pillar that is still rising out of the void also sits
 	# below the surface for a moment.
@@ -104,7 +113,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _tiles_to_edge() -> int:
 	var tile := PillarField.world_to_tile(_king.global_position)
-	return maxi(0, Constants.PHASE_TWO_ESCAPE_TILES - tile.x * context.run_config.escape_side)
+	return maxi(0, GameConfig.field_half_size() - tile.x * context.run_config.escape_side)
 
 
 func _at_escape_edge() -> bool:
@@ -248,11 +257,38 @@ func _escape() -> void:
 		return
 	_stop_everything()
 	context.camera.release()
-	var forward := context.camera.screen_to_world_dir(Vector2(float(context.run_config.escape_side), 0.0))
-	var tween := create_tween().set_parallel(true)
-	tween.tween_property(_king, "global_position", _king.global_position + forward * 3.0 * TILE + Vector3(0.0, -6.0, 0.0), 1.2).set_ease(Tween.EASE_IN)
 	_king.freeze()
-	_finish_with_fade("escaped", false)
+	# Jump off the edge and land on top of the clock.
+	var top := _clock_top()
+	var apex := (_king.global_position + top) * 0.5 + Vector3(0.0, 3.0, 0.0)
+	var tween := create_tween()
+	tween.tween_property(_king, "global_position", apex, 0.45).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+	tween.tween_property(_king, "global_position", top, 0.6).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_QUAD)
+	tween.tween_callback(func() -> void: context.camera.shake(0.2, 0.25))
+	tween.tween_interval(0.6)
+	tween.tween_callback(func() -> void: _finish_with_fade("escaped", false))
+
+
+## The Phase 1 clock, huge, floating in the void beyond the escape edge. It stays level with the
+## king along the edge, so it is in view whenever he gets close.
+func _build_clock() -> void:
+	_clock = Placeholders.clock()
+	_clock.scale = Vector3.ONE * CLOCK_SCALE
+	Placeholders.set_clock_time(_clock, "0:00")
+	add_child(_clock)
+	_follow_clock()
+
+
+func _follow_clock() -> void:
+	var side := float(context.run_config.escape_side)
+	var border := PillarField.tile_to_world(Vector2i(_field.edge_x(), 0)).x + side * TILE * 0.5
+	var height := 2.0 * CLOCK_SCALE
+	_clock.global_position = Vector3(border + side * CLOCK_GAP, PillarField.SURFACE_Y - CLOCK_DROP - height, _king.global_position.z)
+
+
+## Centre of the clock's top surface, where the king lands in the good ending.
+func _clock_top() -> Vector3:
+	return _clock.global_position + Vector3(0.0, 2.0 * CLOCK_SCALE, 0.0)
 
 
 func _finish_with_fade(result: String, stop: bool = true) -> void:

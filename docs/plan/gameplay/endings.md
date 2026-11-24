@@ -16,7 +16,7 @@ Result: the screen becomes completely dark. Text states, in essence:
 
 ## 3. Escape to the other player
 
-Trigger: the king travels about 500 tiles toward the side encoded by the Phase 1 clock, reaches the edge, and jumps down.
+Trigger: the king travels to the field border on the side encoded by the Phase 1 clock (250 tiles with the default field size), where the clock floats in the void, and jumps down onto it.
 
 Result: a cutscene shows the king dropping onto the chess clock and switching to the other player. The king says:
 

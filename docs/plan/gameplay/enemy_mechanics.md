@@ -8,7 +8,8 @@ This document defines the product enemy vocabulary. Exact values are balancing p
 - A hand owns at most one action at a time. It cannot begin a second action until its current action ends.
 - Hands may act concurrently. Planned coordination may combine at most three hands in one deliberate setup.
 - A hand's action cooldown decreases as its phase progresses and never drops below zero.
-- Every action except the guiding missile hand has a telegraph of at least one second between the warning appearing and the attack. The telegraph never shrinks; instead, the attacks themselves get faster as the phase progresses (movement, the fall of top-down hands, strikes and recovery; a landed punch keeps its blocking time). Phase 1 attacks start slow (0.6 times the base speed) and reach 1.4 times by its end.
+- Every action except the guiding missile hand has a telegraph of one second between the warning appearing and the attack. The telegraph does not shrink; instead, the attacks themselves get faster as the phase progresses (movement, the fall of top-down hands, strikes and recovery; a landed punch keeps its blocking time). Phase 1 attacks start slow (0.6 times the base speed) and reach 1.4 times by its end; Phase 2 attacks go from 2 to 3 times.
+- Cooldown, telegraph and attack speed each ramp linearly from a start to an end value over a set time per phase, configured in `config/timing.cfg`. The values above are its defaults.
 - In Phase 2, simultaneous action centres may not occupy the same tile. Their effect areas may overlap.
 
 ## Action catalogue

@@ -1,6 +1,6 @@
 # Enemy Curve
 
-Earlier mechanics remain active after each timestamp. The Phase 2 attack-hand count excludes guiding missile hands.
+Earlier mechanics remain active after each timestamp. The timestamps for hand counts, guiding hands and when each attack appears or upgrades are set in `config/schedule.cfg`; this document describes the default values. The Phase 2 attack-hand count excludes guiding missile hands.
 
 ## Phase 1 — Board Cleanup
 
