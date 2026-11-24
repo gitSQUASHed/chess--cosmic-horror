@@ -9,6 +9,16 @@ const SWEEP_SPEED := 5.5
 const VOLUME_HEIGHT := 1.2
 ## Tiles per second a swipe slides.
 const SWIPE_SPEED := 6.0
+## Metadata on every Area3D on the hand_danger layer: what touching it does to the king.
+const EFFECT_META := &"effect"
+## Metadata on push volumes: the world velocity (Vector3) the king is shoved with.
+const PUSH_VELOCITY_META := &"push_velocity"
+## Flattens the king (punch, smash).
+const EFFECT_CRUSH := "crush"
+## Shoves the king along with the hand; he can still move out of it (sweep, swipe).
+const EFFECT_PUSH := "push"
+## Picks the king up and carries him off (guiding hand).
+const EFFECT_GRAB := "grab"
 
 @export var kind: String = ""
 @export var level: int = 1
@@ -27,9 +37,10 @@ const SWIPE_SPEED := 6.0
 @export var recovery: float = 0.35
 ## True if the hand blocks the king once it stands on the field (punch).
 @export var blocks_movement: bool = false
-## True if the hand captures the king: while active for ground hands, while falling for
-## top-down hands.
-@export var damages: bool = true
+## True if the hand crushes the king while it falls (top-down hands).
+@export var damages: bool = false
+## True if the active hand shoves the king along with it (ground hands).
+@export var pushes: bool = false
 
 
 func placeholder_name() -> String:
@@ -54,6 +65,25 @@ func rest_position(command: HandCommand) -> Vector3:
 	if kind == "swipe":
 		return command.start
 	return _rest_tiles(command) * command.tile_size
+
+
+## World velocity of a moving hand while active (zero for hands that do not move).
+func active_velocity(command: HandCommand) -> Vector3:
+	var speed := command.speed_scale * command.tile_size
+	match kind:
+		"swipe":
+			return command.direction * SWIPE_SPEED * speed
+		"sweep":
+			match command.side:
+				"left":
+					return Vector3(SWEEP_SPEED * speed, 0.0, 0.0)
+				"right":
+					return Vector3(-SWEEP_SPEED * speed, 0.0, 0.0)
+				"top":
+					return Vector3(0.0, 0.0, SWEEP_SPEED * speed)
+				_:
+					return Vector3(0.0, 0.0, -SWEEP_SPEED * speed)
+	return Vector3.ZERO
 
 
 func active_position(command: HandCommand, active_elapsed: float) -> Vector3:

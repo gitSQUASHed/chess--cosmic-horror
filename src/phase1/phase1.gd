@@ -30,7 +30,8 @@ func _ready() -> void:
 	add_child(_clock)
 	_king = Phase1King.new()
 	_king.setup(context.run_config.king_is_white)
-	_king.captured.connect(_on_captured)
+	_king.crushed.connect(_on_crushed)
+	_king.fell_off.connect(_on_fell_off)
 	add_child(_king)
 	_silhouettes = Silhouettes.new()
 	_silhouettes.setup(context.run_config.rng)
@@ -48,10 +49,12 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	if _ended:
+		# Running hands play out, e.g. the punch that just crushed the king finishes landing.
+		_hands.tick(delta)
 		return
 	_director.tick(delta)
 	_hands.tick(delta)
-	_king.try_move(_grid_input())
+	_king.update(_grid_input())
 	Placeholders.set_clock_time(_clock, _format_time(Constants.PHASE_ONE_SECONDS - _director.elapsed))
 	_debug_label.text = "DEBUG phase 1  t=%s  hands=%d  queue=%d  attack level=%d\nWASD/arrows move | F3 +30s | F10 hide | R restart | [ ] pixel size | F2 phase 2" % [
 		_format_time(_director.elapsed), _hands.hand_count(), _hands.queue_size(), _director.attack_level()]
@@ -116,14 +119,34 @@ func _grid_input() -> Vector2i:
 		int(Input.is_action_pressed("move_down")) - int(Input.is_action_pressed("move_up")))
 
 
-func _on_captured() -> void:
+func _on_crushed() -> void:
 	if _ended:
 		return
 	_ended = true
-	_hands.clear()
+	_hands.stop_requests()
 	_king.freeze()
-	var sequence := CaptureSequence.start(self, context, _king)
-	sequence.finished.connect(func() -> void: finished.emit("captured"))
+	_king.squash()
+	context.camera.shake(0.2, 0.3)
+	_end_with_fade("captured", 0.9)
+
+
+## The king slides off the board edge and drops; his own tween keeps playing.
+func _on_fell_off() -> void:
+	if _ended:
+		return
+	_ended = true
+	_hands.stop_requests()
+	_end_with_fade("captured", 1.2)
+
+
+func _end_with_fade(result: String, delay: float) -> void:
+	await get_tree().create_timer(delay).timeout
+	if not is_inside_tree():
+		return
+	context.pixelation.animate_fade(1.0, 0.6)
+	await get_tree().create_timer(0.7).timeout
+	if is_inside_tree():
+		finished.emit(result)
 
 
 func _on_director_finished() -> void:

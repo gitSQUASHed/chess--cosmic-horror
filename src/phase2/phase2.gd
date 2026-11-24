@@ -41,7 +41,8 @@ func _ready() -> void:
 	_king = Phase2King.new()
 	_king.setup(context.run_config.king_is_white, context.camera)
 	_king.position = start
-	_king.captured.connect(_on_captured)
+	_king.crushed.connect(_on_crushed)
+	_king.grabbed.connect(_on_grabbed)
 	add_child(_king)
 	context.camera.follow(_king)
 	context.effects.set_mode(ScreenEffects.Mode.PHASE_TWO)
@@ -63,12 +64,17 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	if _ended:
+		# Running hands play out, e.g. the punch that just crushed the king finishes landing.
+		_hands.tick(delta)
 		return
 	_director.tick(delta)
 	_hands.tick(delta)
 	_field.update_around(_king.global_position)
 	# Falling into a hole: the camera stays at the surface so the king visibly drops into the dark.
-	if not _falling and _king.global_position.y < PillarField.SURFACE_Y - 0.5:
+	# Only over a hole: a king riding a pillar that is still rising out of the void also sits
+	# below the surface for a moment.
+	var over_hole := not _field.has_pillar(PillarField.world_to_tile(_king.global_position))
+	if not _falling and over_hole and _king.global_position.y < PillarField.SURFACE_Y - 0.5:
 		_falling = true
 		context.camera.release()
 	while AttackToggles.is_enabled("phase2", "guiding_hand") and _guiding.size() < _director.guiding_hands_wanted():
@@ -200,13 +206,33 @@ func _spawn_guiding_hand() -> void:
 	_guiding.append(guiding)
 
 
-func _on_captured() -> void:
+func _on_crushed() -> void:
 	if _ended:
 		return
 	_stop_everything()
 	_king.freeze()
-	var sequence := CaptureSequence.start(self, context, _king)
-	sequence.finished.connect(func() -> void: finished.emit("captured"))
+	_king.squash()
+	context.camera.release()
+	context.camera.shake(0.3, 0.3)
+	await get_tree().create_timer(0.8).timeout
+	if is_inside_tree():
+		_finish_with_fade("captured", false)
+
+
+## The guiding hand closes on the king and flies on with him; the camera stays behind.
+func _on_grabbed(by: Node3D) -> void:
+	if _ended:
+		return
+	_stop_everything(by)
+	_king.freeze()
+	context.camera.release()
+	var carrier := by as GuidingHand
+	if carrier != null:
+		carrier.carry(_king)
+	context.pixelation.animate_pixel_size(Presets.GRAB, 1.2)
+	await get_tree().create_timer(1.2).timeout
+	if is_inside_tree():
+		_finish_with_fade("captured", false)
 
 
 func _on_void_entered(body: Node3D) -> void:
@@ -238,11 +264,14 @@ func _finish_with_fade(result: String, stop: bool = true) -> void:
 		finished.emit(result)
 
 
-func _stop_everything() -> void:
+## Ends play: no new hand actions start (running ones play out) and every guiding hand stops,
+## except `keep_moving` (the one carrying the king away).
+func _stop_everything(keep_moving: Node3D = null) -> void:
 	_ended = true
-	_hands.clear()
+	_hands.stop_requests()
 	for guiding in _guiding:
-		guiding.set_physics_process(false)
+		if guiding != keep_moving:
+			guiding.set_physics_process(false)
 
 
 func _build_debug_label() -> void:

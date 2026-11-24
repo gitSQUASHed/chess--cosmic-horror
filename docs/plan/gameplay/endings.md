@@ -2,7 +2,7 @@
 
 ## 1. Captured by a hand
 
-Trigger: a hand catches the king.
+Trigger: a hand kills the king, shown with the attack itself rather than a separate animation (see [deaths](enemy_mechanics.md#deaths)).
 
 Result: game-over scene. A speech bubble or distant line from the players' origin says that they can finally go downstairs.
 

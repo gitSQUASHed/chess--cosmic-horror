@@ -29,7 +29,18 @@ These are the only warnings. There are no ground markers, labels or glow changes
 - **Ground hands** (side sweep, flat swipe) appear on the field where they will act, wait for the telegraph, then act.
 - **Top-down hands** (punch, smash) are not on screen before the attack. During the telegraph only their shadow, framed by a white outline, shows on the field where they will land; then the hand falls from above the top of the screen onto the shadow. Shadow and outline stay until the hand lands. A punch crushes the king while it falls and blocks once it has landed; a smash destroys its tiles when it lands.
 - **Void removal** has no visible hand. The pillars it will remove go completely dark with an outline for one second, then are pulled down; the outline disappears as they go.
-- In both phases the king and every hand, including guiding hands and the capturing hand, have a solid white outline that light and shadow do not affect.
+- In both phases the king and every hand, including guiding hands, have a solid white outline that light and shadow do not affect.
+
+## Deaths
+
+There is no separate capture animation. The king dies the way the attack works:
+
+- **Punch and smash:** the falling hand flattens the king under it. A landed punch only blocks.
+- **Sweep and swipe:** the moving hand shoves the king along with it. He is not killed by the touch and can still move out of its path. In Phase 2 a swipe can push him off the pillars into the void; in Phase 1 a sweep shoves him one tile at a time and pushes him off the board, or crushes him against a landed punch.
+- **Guiding hand:** it closes on the king and flies on, carrying him off screen.
+- **Void:** the king falls through a gap.
+
+Every hand death leads to the captured ending; the void fall to the void ending.
 
 ## Guiding missile hands
 

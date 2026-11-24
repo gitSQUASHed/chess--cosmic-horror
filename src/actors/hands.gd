@@ -35,6 +35,7 @@ var _hands: Array[Hand] = []
 var _cooldowns: Array[float] = []
 var _queue: Array[Dictionary] = []
 var _target_count := 0
+var _stopped := false
 
 
 func setup(random: RandomNumberGenerator) -> void:
@@ -67,6 +68,13 @@ func queue_size() -> int:
 	return _queue.size()
 
 
+## Drops the queue and starts no new actions; running actions play out (e.g. the hand that
+## just crushed the king finishes landing).
+func stop_requests() -> void:
+	_queue.clear()
+	_stopped = true
+
+
 func clear() -> void:
 	_queue.clear()
 	for hand in _hands:
@@ -79,7 +87,8 @@ func tick(delta: float) -> void:
 		hand.tick(delta)
 		if not hand.is_busy():
 			_cooldowns[index] = maxf(0.0, _cooldowns[index] - delta)
-	_assign_requests()
+	if not _stopped:
+		_assign_requests()
 	_remove_surplus_hands()
 
 

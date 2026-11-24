@@ -10,9 +10,9 @@ extends Node3D
 ## shadow and outline vanish when it lands, and the action becomes active. There are no other
 ## warnings.
 ##
-## Physics: a damaging action enables an Area3D on the hand_danger layer, while ACTIVE for
-## ground hands and while falling for top-down hands (the area moves down with the hand, so it
-## crushes what it falls on). A blocking action (punch) enables a StaticBody3D on the wall layer
+## Physics: an Area3D on the hand_danger layer tagged with its effect. A top-down hand crushes
+## while falling (the area moves down with it, so it crushes what it falls on); a ground hand
+## pushes while ACTIVE and publishes its velocity for the king to be shoved with. A blocking action (punch) enables a StaticBody3D on the wall layer
 ## while ACTIVE: the landed hand is the wall.
 
 signal action_started(hand: Hand, command: HandCommand)
@@ -27,6 +27,10 @@ enum State { IDLE, EMERGING, DROPPING, ACTIVE, RECOVERING }
 const DROP_TILES := 20.0
 ## Seconds the fall takes at speed scale 1.
 const DROP_SECONDS := 0.35
+## After landing, a top-down hand still crushes for this long. The fall covers several metres per
+## physics frame near its end, so the moving crush volume alone can skip past the king; this
+## window makes the landing itself always count.
+const IMPACT_SECONDS := 0.12
 ## Shadow opacity at the start and end of the telegraph.
 const SHADOW_FAINT := 0.35
 const SHADOW_FULL := 0.85
@@ -100,6 +104,8 @@ func tick(delta: float) -> void:
 				_enter(State.ACTIVE)
 				action_became_active.emit(self, _command)
 		State.ACTIVE:
+			if _command.definition.from_above and _danger_shape != null and _elapsed >= IMPACT_SECONDS:
+				_danger_shape.disabled = true
 			if _elapsed >= _command.active_time():
 				_enter(State.RECOVERING)
 		State.RECOVERING:
@@ -116,8 +122,11 @@ func _enter(new_state: State) -> void:
 	_elapsed = 0.0
 	var active := new_state == State.ACTIVE
 	if _danger_shape != null:
-		var danger_state := State.DROPPING if _command.definition.from_above else State.ACTIVE
-		_danger_shape.disabled = new_state != danger_state
+		if _command.definition.from_above:
+			# Crushes while falling and at the moment of impact (see IMPACT_SECONDS).
+			_danger_shape.disabled = new_state != State.DROPPING and new_state != State.ACTIVE
+		else:
+			_danger_shape.disabled = new_state != State.ACTIVE
 	if _wall_shape != null:
 		_wall_shape.disabled = not active
 	if _visual != null:
@@ -157,9 +166,11 @@ func _build_nodes() -> void:
 	if definition.from_above:
 		_shadow = Placeholders.shadow(Vector2(volume.x, volume.z), outline_width)
 		add_child(_shadow)
-	if definition.damages:
+	if definition.damages or definition.pushes:
 		_danger_shape = _make_shape(definition)
 		_danger = Area3D.new()
+		_danger.set_meta(AttackDefinition.EFFECT_META, AttackDefinition.EFFECT_CRUSH if definition.damages else AttackDefinition.EFFECT_PUSH)
+		_danger.set_meta(AttackDefinition.PUSH_VELOCITY_META, definition.active_velocity(_command))
 		_danger.collision_layer = Layers.HAND_DANGER
 		_danger.collision_mask = 0
 		_danger.monitoring = false

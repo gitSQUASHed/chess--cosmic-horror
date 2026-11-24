@@ -16,7 +16,7 @@ Drop a model here and it replaces the matching coloured placeholder. No code cha
 | `silhouette_left`, `silhouette_right` | same |
 | `piece_<name>` | same |
 
-Actions: `sweep`, `punch`, `swipe`, `void-removal`, `smash`. The capture sequence uses `hand_grabbing-lvl1`.
+Actions: `sweep`, `punch`, `swipe`, `void-removal`, `smash`.
 
 ## Conventions
 

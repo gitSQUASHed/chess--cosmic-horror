@@ -10,7 +10,7 @@ Godot 4 (3D) cosmic-horror survival game: a chess king survives hands that clear
 |---|---|
 | `src/main.tscn` | Main scene; its script is `GameFlow` |
 | `src/core/` | `GameFlow` (state machine), `GameContext`, `RunConfig`, `Constants`, `Layers` (physics layers), `Palette`, `CameraRig`, `InputSetup`, `AttackToggles` |
-| `src/actors/` | `Hand` (single-action command executor), `Hands` (organiser), `GuidingHand`, `CaptureSequence` |
+| `src/actors/` | `Hand` (single-action command executor), `Hands` (organiser), `GuidingHand` |
 | `src/attacks/` | `AttackDefinition` and `AttackCatalogue` (all attack data), `HandCommand` |
 | `src/models/` | `Placeholders` (the single model factory), `ModelAnimator` |
 | `src/phase1/` | Phase 1 scene, king, director, silhouettes |

@@ -20,6 +20,7 @@ var speed := 0.0
 var heading := Vector3.FORWARD
 
 var _visual: Node3D
+var _carrying: Node3D
 
 
 func setup(chase_target: Node3D, start: Vector3) -> void:
@@ -29,6 +30,7 @@ func setup(chase_target: Node3D, start: Vector3) -> void:
 	Placeholders.add_outline(_visual)
 	add_child(_visual)
 	var danger := Area3D.new()
+	danger.set_meta(AttackDefinition.EFFECT_META, AttackDefinition.EFFECT_GRAB)
 	danger.collision_layer = Layers.HAND_DANGER
 	danger.collision_mask = 0
 	danger.monitoring = false
@@ -55,7 +57,18 @@ func threat(from_position: Vector3) -> float:
 	return linear * linear
 
 
+## Closes on `subject` and keeps flying straight on, carrying it off and slowly rising.
+func carry(subject: Node3D) -> void:
+	_carrying = subject
+	subject.reparent(self)
+	target = null
+
+
 func _physics_process(delta: float) -> void:
+	if _carrying != null:
+		speed = minf(MAX_SPEED, speed + ACCELERATION * delta)
+		global_position += heading * speed * delta + Vector3.UP * 2.0 * delta
+		return
 	if target == null or not is_instance_valid(target):
 		return
 	var to_target := target.global_position - global_position

@@ -8,7 +8,7 @@ The 3D scene is rendered to a low-resolution target and then pixelated by a canv
 
 Pixel size is a runtime value, not a fixed asset property. It can change smoothly to support moments such as:
 
-- the king being grabbed, where the view can move closer or distort while the pixel size changes;
+- the king being carried off by a guiding hand, where the pixel size grows while the camera stays behind;
 - falling into the void, including the Phase 1 to Phase 2 fall;
 - the guiding hand's proximity, as an additional feedback channel.
 

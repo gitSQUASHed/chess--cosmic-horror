@@ -4,7 +4,10 @@ extends CharacterBody3D
 ## that collides with pillars and walls. The jump keeps the current walking direction and speed
 ## and can clear a narrow gap. A hurtbox Area3D detects hand danger volumes.
 
-signal captured
+## A falling top-down hand flattened the king.
+signal crushed
+## A guiding hand caught the king.
+signal grabbed(by: Node3D)
 
 ## Base walking speed: 5 tiles per second. Guiding hands derive their speed from it.
 const BASE_WALK_SPEED := 5.0 * Constants.PHASE2_TILE_SIZE
@@ -20,6 +23,7 @@ var dead := false
 var _visual: Node3D
 var _facing := Vector3.FORWARD
 var _animation := ""
+var _hurtbox: Area3D
 
 
 func setup(is_white: bool, camera_rig: CameraRig) -> void:
@@ -49,9 +53,10 @@ func setup(is_white: bool, camera_rig: CameraRig) -> void:
 	hurtbox.add_child(hurt_shape)
 	hurtbox.area_entered.connect(_on_area_entered)
 	add_child(hurtbox)
+	_hurtbox = hurtbox
 
 
-## Stops all control, e.g. while being picked up or at the end of a run.
+## Stops all control, e.g. while being carried off or at the end of a run.
 func freeze() -> void:
 	dead = true
 	velocity = Vector3.ZERO
@@ -64,7 +69,9 @@ func _physics_process(delta: float) -> void:
 	if camera != null:
 		desired = camera.screen_to_world_dir(input)
 	var wants_move := desired.length() > 0.1
-	var horizontal := desired * WALK_SPEED
+	# Moving hands (swipes) shove the king along; his own walking adds on top, so he can still
+	# step out of the hand's path or get shoved off the pillars into the void.
+	var horizontal := _apply_push(desired * WALK_SPEED, _push_velocity())
 	if Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = JUMP_VELOCITY
 	if wants_move:
@@ -80,7 +87,42 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 
-func _on_area_entered(_area: Area3D) -> void:
-	if not dead:
-		dead = true
-		captured.emit()
+## Flattens the king under the hand that landed on him.
+func squash() -> void:
+	var tween := create_tween()
+	tween.tween_property(_visual, "scale", Vector3(1.5, 0.08, 1.5), 0.08)
+
+
+## While shoved, the king moves at least as fast as the hand along its direction, so walking or
+## jumping against it cannot carry him through it. Sideways movement is unchanged.
+func _apply_push(walk: Vector3, push: Vector3) -> Vector3:
+	var push_speed := push.length()
+	if push_speed < 0.01:
+		return walk
+	var direction := push / push_speed
+	var along := walk.dot(direction)
+	if along < push_speed:
+		walk += direction * (push_speed - along)
+	return walk
+
+
+func _push_velocity() -> Vector3:
+	var result := Vector3.ZERO
+	for area in _hurtbox.get_overlapping_areas():
+		if String(area.get_meta(AttackDefinition.EFFECT_META, "")) == AttackDefinition.EFFECT_PUSH:
+			var push: Vector3 = area.get_meta(AttackDefinition.PUSH_VELOCITY_META, Vector3.ZERO)
+			if push.length() > result.length():
+				result = push
+	return Vector3(result.x, 0.0, result.z)
+
+
+func _on_area_entered(area: Area3D) -> void:
+	if dead:
+		return
+	match String(area.get_meta(AttackDefinition.EFFECT_META, "")):
+		AttackDefinition.EFFECT_CRUSH:
+			dead = true
+			crushed.emit()
+		AttackDefinition.EFFECT_GRAB:
+			dead = true
+			grabbed.emit(area.get_parent())
