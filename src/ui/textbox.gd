@@ -5,6 +5,8 @@ extends CanvasLayer
 ## A pixel font dropped at res://src/assets/fonts/pixel.ttf is used automatically.
 
 signal finished
+## Emitted whenever a line appears, with its index in the lines passed to play().
+signal line_shown(index: int)
 
 const FONT_PATH := "res://src/assets/fonts/pixel.ttf"
 
@@ -72,6 +74,7 @@ func play(lines: Array[String]) -> void:
 
 func _show_line() -> void:
 	_label.text = _lines[_index]
+	line_shown.emit(_index)
 
 
 func _unhandled_input(event: InputEvent) -> void:

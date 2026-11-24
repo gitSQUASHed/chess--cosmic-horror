@@ -208,6 +208,19 @@ static func tile(is_light: bool) -> Node3D:
 ## A cube-like pillar: `width` is the tile size in metres (a small gap leaves visible seams),
 ## `height` its full height so its top lines up with the collision box.
 ## Its sides fade into the void colour below `surface_y` (pillar.gdshader).
+## The 8x8 chessboard, tiles spanning x and z from 0 to 8 with their top at y 0. Used by Phase 1
+## and the opening cutscene.
+static func board() -> Node3D:
+	var root := Node3D.new()
+	root.name = "Board"
+	for x in range(Constants.BOARD_TILES):
+		for z in range(Constants.BOARD_TILES):
+			var piece := tile((x + z) % 2 == 0)
+			piece.position = Vector3(x + 0.5, -0.1, z + 0.5)
+			root.add_child(piece)
+	return root
+
+
 static func pillar(width: float = 1.0, height: float = 1.0, surface_y: float = 0.0) -> Node3D:
 	var model := make("pillar", "box", Vector3(width * 0.94, height, width * 0.94), Palette.PILLAR)
 	var body := model.get_node_or_null("Body") as MeshInstance3D

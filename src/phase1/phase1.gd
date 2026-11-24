@@ -71,14 +71,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _build_board() -> void:
-	var board := Node3D.new()
-	board.name = "Board"
-	add_child(board)
-	for x in range(Constants.BOARD_TILES):
-		for z in range(Constants.BOARD_TILES):
-			var tile := Placeholders.tile((x + z) % 2 == 0)
-			tile.position = Vector3(x + 0.5, -0.1, z + 0.5)
-			board.add_child(tile)
+	add_child(Placeholders.board())
 
 
 ## Invisible edge bodies on the wall layer so a physics query blocks moves off the board.
@@ -164,7 +157,7 @@ func _play_collapse() -> void:
 	var rng := context.run_config.rng
 	var tween := create_tween().set_parallel(true)
 	for tile in get_node("Board").get_children():
-		if not (tile is Node3D) or tile is Label3D:
+		if not (tile is Node3D):
 			continue
 		var delay := rng.randf() * 1.4
 		tween.tween_property(tile, "position:y", -40.0, 1.6).set_delay(delay).set_ease(Tween.EASE_IN)

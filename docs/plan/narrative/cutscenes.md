@@ -6,7 +6,7 @@ The game begins as a mundane tabletop chess game. The king's world is rigid, rul
 
 ## Opening
 
-The chess match has ended. The king and two surviving pieces exchange a small line about the game finally being over. A distant player says food is ready and the board must be cleared. A hand removes the two other pieces. It reaches for the king, but he dodges. Phase 1 begins.
+The chess match has ended. The king and two surviving pieces exchange a small line about the game finally being over. A distant player says food is ready and the board must be cleared. With the line that announces it, a hand comes down and snatches the two other pieces off the board, one after the other. It reaches for the king, but he dodges. Phase 1 begins.
 
 ## Board-collapse transition
 

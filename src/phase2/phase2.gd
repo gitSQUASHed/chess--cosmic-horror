@@ -59,6 +59,9 @@ func _ready() -> void:
 	_field.update_around(start)
 	context.pixelation.set_fade(1.0)
 	context.pixelation.animate_fade(0.0, 1.2)
+	# The board-collapse fall left the pixels large (Presets.FALL); they settle back while the
+	# field fades in.
+	context.pixelation.animate_pixel_size(Presets.NORMAL, 1.2)
 	_build_debug_label()
 
 

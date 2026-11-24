@@ -16,7 +16,7 @@ Drop a model here and it replaces the matching coloured placeholder. No code cha
 | `silhouette_left`, `silhouette_right` | same |
 | `piece_<name>` | same |
 
-Actions: `sweep`, `punch`, `swipe`, `void-removal`, `smash`.
+Actions: `sweep`, `punch`, `swipe`, `void-removal`, `smash`. The opening cutscene's hand that takes the pieces is `hand_snatch`.
 
 ## Conventions
 

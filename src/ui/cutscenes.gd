@@ -1,13 +1,17 @@
 class_name Cutscenes
 extends RefCounted
 ## Placeholder cutscene scripts: the lines come from docs/plan/narrative/cutscenes.md and
-## docs/plan/gameplay/endings.md. `props` lists placeholder models staged on screen.
+## docs/plan/gameplay/endings.md. `props` lists placeholder models staged on screen. The
+## optional `stage` "board" stages the scene on the Phase 1 chessboard. The
+## optional `actions` maps a line index to what happens on stage when that line appears, e.g.
+## ["snatch", "piece_a", "piece_b"]: a hand comes down and takes each named prop in turn.
 
 
 static func get_cutscene(cutscene_name: String) -> Dictionary:
 	match cutscene_name:
 		"opening":
 			return {
+				"stage": "board",
 				"props": [["king", Vector3(3.5, 0.0, 4.5)], ["piece_a", Vector3(5.5, 0.0, 3.5)], ["piece_b", Vector3(1.5, 0.0, 3.5)], ["silhouette_left", Vector3(1.5, 0.0, -5.0)], ["silhouette_right", Vector3(6.5, 0.0, -5.0)]],
 				"lines": [
 					"King: Finally. The game is over.",
@@ -15,6 +19,7 @@ static func get_cutscene(cutscene_name: String) -> Dictionary:
 					"Far above: Dinner is ready! Clear the board!",
 					"A hand removes the other pieces. It reaches for the king.",
 				],
+				"actions": {3: [["snatch", "piece_a", "piece_b"]]},
 			}
 		"arrival":
 			return {
