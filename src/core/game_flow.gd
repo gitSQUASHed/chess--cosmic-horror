@@ -20,6 +20,7 @@ func _ready() -> void:
 
 func start_run(first_state: State = State.INTRO) -> void:
 	context.run_config = RunConfig.new()
+	AttackToggles.reload()
 	ending = ""
 	context.pixelation.set_pixel_size(Presets.NORMAL)
 	context.pixelation.set_fade(0.0)

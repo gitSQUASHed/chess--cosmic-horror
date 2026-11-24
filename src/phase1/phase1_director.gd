@@ -72,6 +72,8 @@ func _action_interval() -> float:
 
 func _stock_queue() -> void:
 	while _hands.queue_size() < QUEUE_TARGET:
-		var options: Array[String] = ["sweep", "punch"]
+		var options := AttackToggles.filter("phase1", ["sweep", "punch"] as Array[String])
+		if options.is_empty():
+			return
 		var kind := options[_rng.randi_range(0, options.size() - 1)]
 		_hands.request(kind, attack_level())

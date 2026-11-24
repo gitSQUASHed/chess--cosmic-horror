@@ -71,7 +71,7 @@ func _process(delta: float) -> void:
 	if not _falling and _king.global_position.y < PillarField.SURFACE_Y - 0.5:
 		_falling = true
 		context.camera.release()
-	while _guiding.size() < _director.guiding_hands_wanted():
+	while AttackToggles.is_enabled("phase2", "guiding_hand") and _guiding.size() < _director.guiding_hands_wanted():
 		_spawn_guiding_hand()
 	threat = 0.0
 	for guiding in _guiding:

@@ -88,6 +88,9 @@ func _stock_queue() -> void:
 		var options: Array[String] = ["swipe", "punch"]
 		if elapsed >= 60.0:
 			options.append_array(["void_removal", "smash"])
+		options = AttackToggles.filter("phase2", options)
+		if options.is_empty():
+			return
 		var kind := options[_rng.randi_range(0, options.size() - 1)]
 		_hands.request(kind, _level_for(kind))
 

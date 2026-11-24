@@ -9,7 +9,7 @@ Godot 4 (3D) cosmic-horror survival game: a chess king survives hands that clear
 | Path | Purpose |
 |---|---|
 | `src/main.tscn` | Main scene; its script is `GameFlow` |
-| `src/core/` | `GameFlow` (state machine), `GameContext`, `RunConfig`, `Constants`, `Layers` (physics layers), `Palette`, `CameraRig`, `InputSetup` |
+| `src/core/` | `GameFlow` (state machine), `GameContext`, `RunConfig`, `Constants`, `Layers` (physics layers), `Palette`, `CameraRig`, `InputSetup`, `AttackToggles` |
 | `src/actors/` | `Hand` (single-action command executor), `Hands` (organiser), `GuidingHand`, `CaptureSequence` |
 | `src/attacks/` | `AttackDefinition` and `AttackCatalogue` (all attack data), `HandCommand` |
 | `src/models/` | `Placeholders` (the single model factory), `ModelAnimator` |
@@ -18,6 +18,7 @@ Godot 4 (3D) cosmic-horror survival game: a chess king survives hands that clear
 | `src/fx/` | `screen.gdshader`, `PixelationLayer`, `ScreenEffects`, `Presets` |
 | `src/ui/` | `Textbox`, cutscenes, `CutsceneRunner`, `StubState` |
 | `src/assets/models/` | Real models (see its README for names) |
+| `config/attacks.cfg` | Debug switches: enable or disable each attack per phase (`AttackToggles`) |
 | `docs/plan/` | Product design | 
 | `docs/tasks/` | Tickets; move finished ones to `done/` |
 | `tests/mvp/` | Untouched 2D prototype |
@@ -44,6 +45,7 @@ Godot 4 (3D) cosmic-horror survival game: a chess king survives hands that clear
 
 - Run: open the project in Godot 4.3 or newer and press Run (main scene is `src/main.tscn`).
 - Syntax check without Godot: `pip install gdtoolkit` then `gdparse src/*/*.gd`.
+- Turn attacks off for testing: set them to `false` in `config/attacks.cfg`, then restart the run (R).
 - Debug keys: R restart, F2 jump to Phase 2, F3 skip time, F10 hide debug text, `[`/`]` pixel size, F5 to F8 toggle vignette, grain and static, fisheye, bloom, F9 toggles the green palette.
 
 ## Style
