@@ -31,7 +31,7 @@ var active_override := -1.0
 func active_time() -> float:
 	if active_override > 0.0:
 		return active_override / speed_scale
-	# A wall's duration is how long it blocks, not how fast it moves.
+	# A punch's active duration is how long it blocks as a wall, not how fast it moves.
 	if definition.blocks_movement:
 		return definition.active_duration
 	return definition.active_duration / speed_scale

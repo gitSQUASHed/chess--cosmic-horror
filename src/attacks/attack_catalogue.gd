@@ -14,7 +14,7 @@ static func get_definition(kind: String, level: int) -> AttackDefinition:
 
 
 static func kinds() -> Array[String]:
-	return ["sweep", "grab", "wall", "swipe", "void_removal", "punch"]
+	return ["sweep", "punch", "swipe", "void_removal", "smash"]
 
 
 static func _build(kind: String, level: int) -> AttackDefinition:
@@ -29,21 +29,16 @@ static func _build(kind: String, level: int) -> AttackDefinition:
 			definition.telegraph_base = 1.0
 			definition.active_duration = 1.55
 			definition.recovery = 0.35
-		"grab":
-			definition.asset_name = "grabbing"
+		"punch":
+			# Falls from above and crushes the king on the way down, then stays on the field as
+			# a wall for active_duration.
+			definition.asset_name = "punch"
 			definition.from_above = true
-			definition.size = 3 if upgraded else 1
-			definition.telegraph_base = 1.0
-			definition.active_duration = 0.48
-			definition.recovery = 0.4
-		"wall":
-			definition.asset_name = "wall"
-			definition.size = 3 if upgraded else 1
+			definition.size = 2 if upgraded else 1
 			definition.telegraph_base = 1.0
 			definition.active_duration = 3.7
 			definition.recovery = 0.3
 			definition.blocks_movement = true
-			definition.damages = false
 		"swipe":
 			definition.asset_name = "swipe"
 			definition.size = 3 if upgraded else 1
@@ -59,8 +54,9 @@ static func _build(kind: String, level: int) -> AttackDefinition:
 			definition.telegraph_base = 1.0
 			definition.active_duration = 0.4
 			definition.recovery = 0.4
-		"punch":
-			definition.asset_name = "punch"
+		"smash":
+			# Phase 2: destroys the pillars it lands on.
+			definition.asset_name = "smash"
 			definition.from_above = true
 			definition.size = 3 if upgraded else 1
 			definition.damages = false

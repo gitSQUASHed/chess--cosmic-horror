@@ -221,10 +221,6 @@ static func pillar(width: float = 1.0, height: float = 1.0, surface_y: float = 0
 	return model
 
 
-static func wall_segment() -> Node3D:
-	return make("wall", "box", Vector3(1.0, 1.0, 1.0), Palette.WALL)
-
-
 static func clock() -> Node3D:
 	var model := make("clock", "box", Vector3(1.6, 2.0, 0.6), Palette.PROP)
 	# The clock's time readout: large digits so they survive the pixelation.

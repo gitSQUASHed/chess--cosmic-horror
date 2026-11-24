@@ -29,25 +29,24 @@ The dialogue should be sparse rather than continuous, and should not explain the
 
 ## Hand visual language
 
-Every hand is a glowing white celestial entity, never naturalistic human skin. Before an attack it appears on the board (or, for a grab, only its shadow does) and waits at least one second before acting, as described in [attack warnings](enemy_mechanics.md#attack-warnings).
+Every hand is a glowing white celestial entity, never naturalistic human skin. Before an attack it appears on the board (or, for a punch, only its shadow does) and waits at least one second before acting, as described in [attack warnings](enemy_mechanics.md#attack-warnings).
 
-Each hand is a distinct entity. A hand can perform exactly one action at a time: it cannot begin a sweep, grab, or wall placement until its current action has resolved and recovered.
+Each hand is a distinct entity. A hand can perform exactly one action at a time: it cannot begin a sweep or punch until its current action has resolved and recovered.
 
 | Approach and pose | Meaning |
 |---|---|
 | Hand rises from the left or right board side | Sweep from that side |
-| Curved/reaching hand from above | Grab attack |
-| Flat open hand from above | Temporary wall / blocked line |
+| Fist falling from above | Punch: crushes while falling, then blocks the tiles |
 
-The player should understand which attack is coming from the waiting hand's position and pose, or the grab's shadow, without coloured ground markers or HUD icons.
+The player should understand which attack is coming from the waiting hand's position and pose, or the punch's shadow, without coloured ground markers or HUD icons.
 
 ## Escalation schedule
 
 | Time | Attack changes |
 |---|---|
-| 0:00–0:30 | One hand performs single-tile sweeps and 1×1 grabs. |
-| 0:30–1:00 | A second hand enters. It may place a temporary 1×1 wall only while another hand performs a non-wall action. |
-| 1:00–1:30 | Sweeps widen to three tiles, and grabs and walls become 3×1 lines. |
+| 0:00–0:30 | One hand performs single-tile sweeps and 1×1 punches. |
+| 0:30–1:00 | A second hand enters. |
+| 1:00–1:30 | Sweeps widen to three tiles, and punches become 2×2 squares. |
 | 1:30–2:00 | A third hand enters. Cooldowns keep decreasing and attacks keep getting faster; the telegraph stays at one second. |
 
 At 2:00 the board begins to break apart, initiating the transition cutscene.

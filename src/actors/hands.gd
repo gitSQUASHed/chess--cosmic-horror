@@ -67,13 +67,6 @@ func queue_size() -> int:
 	return _queue.size()
 
 
-func has_queued(kind: String) -> bool:
-	for entry in _queue:
-		if String(entry["kind"]) == kind:
-			return true
-	return false
-
-
 func clear() -> void:
 	_queue.clear()
 	for hand in _hands:
@@ -126,8 +119,6 @@ func _assign_requests() -> void:
 		if hand.is_busy() or _cooldowns[index] > 0.0:
 			continue
 		for queue_index in range(_queue.size()):
-			if not _can_start(_queue[queue_index]):
-				continue
 			var command := _place(_queue[queue_index], index)
 			if command == null:
 				continue
@@ -137,16 +128,6 @@ func _assign_requests() -> void:
 			hand.outline_width = outline_width
 			hand.execute(command)
 			break
-
-
-## Rule: a wall may only start while another hand performs a non-wall action.
-func _can_start(entry: Dictionary) -> bool:
-	if String(entry["kind"]) != "wall":
-		return true
-	for hand in _hands:
-		if hand.is_busy() and hand.current_kind() != "wall":
-			return true
-	return false
 
 
 func _shares_center(command: HandCommand) -> bool:
@@ -199,11 +180,8 @@ func _place_on_board(definition: AttackDefinition) -> HandCommand:
 				_:
 					command.anchor = Vector2i(lane, board - 1)
 		_:
-			# Walls and grabs: a line of `size` tiles, horizontal or vertical, inside the board.
-			command.horizontal = rng.randi_range(0, 1) == 0
-			var span_x := definition.size if command.horizontal else 1
-			var span_y := 1 if command.horizontal else definition.size
+			# Punches: a square of `size` tiles inside the board.
 			command.anchor = Vector2i(
-				rng.randi_range(0, board - span_x),
-				rng.randi_range(0, board - span_y))
+				rng.randi_range(0, board - definition.size),
+				rng.randi_range(0, board - definition.size))
 	return command

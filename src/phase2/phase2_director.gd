@@ -85,11 +85,9 @@ func _action_interval() -> float:
 
 func _stock_queue() -> void:
 	while _hands.queue_size() < _hands.hand_count() + 1:
-		var options: Array[String] = ["swipe", "grab"]
+		var options: Array[String] = ["swipe", "punch"]
 		if elapsed >= 60.0:
-			options.append_array(["void_removal", "punch"])
-		if not _hands.has_queued("wall"):
-			options.append("wall")
+			options.append_array(["void_removal", "smash"])
 		var kind := options[_rng.randi_range(0, options.size() - 1)]
 		_hands.request(kind, _level_for(kind))
 
@@ -98,9 +96,7 @@ func _level_for(kind: String) -> int:
 	match kind:
 		"swipe":
 			return 2
-		"grab":
-			return int(_upgrades.get("grab", 2))
-		"wall":
-			return int(_upgrades.get("wall", 2))
+		"punch":
+			return int(_upgrades.get("punch", 2))
 		_:
 			return 2 if elapsed >= 120.0 else 1

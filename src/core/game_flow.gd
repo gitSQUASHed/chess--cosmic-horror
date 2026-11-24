@@ -23,7 +23,7 @@ func start_run(first_state: State = State.INTRO) -> void:
 	ending = ""
 	context.pixelation.set_pixel_size(Presets.NORMAL)
 	context.pixelation.set_fade(0.0)
-	context.upgrades = {"sweep": 1, "grab": 1, "wall": 1}
+	context.upgrades = {"sweep": 1, "punch": 1}
 	change_state(first_state)
 
 
@@ -134,7 +134,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		KEY_R:
 			start_run(State.PHASE_ONE)
 		KEY_F2:
-			context.upgrades = {"sweep": 2, "grab": 2, "wall": 2}
+			context.upgrades = {"sweep": 2, "punch": 2}
 			change_state(State.PHASE_TWO)
 		KEY_BRACKETLEFT:
 			context.pixelation.set_pixel_size(context.pixelation.get_pixel_size() - 1.0)

@@ -38,7 +38,7 @@ These values were measured on the 877×613 image. Camera and layout follow them;
 - No name labels on any model.
 - The king colour corresponds to its chess side.
 - Cutscenes use the Phase 1 camera lens from a low angle (`CameraRig.cutscene_pose`), so models keep their in-game scale and the player silhouettes tower over the board above the textbox.
-- White glowing hands appear directly on the board before they act; grabs show only their shadow first.
+- White glowing hands appear directly on the board before they act; top-down hands show only their shadow first.
 
 ### Phase 2
 

@@ -9,14 +9,14 @@ Drop a model here and it replaces the matching coloured placeholder. No code cha
 | Placeholder name | File name |
 |---|---|
 | `king_white`, `king_black` | `king_white`, `king_black` |
-| `hand/<action>-lvl<N>` | `hand_<action>-lvl<N>`, for example `hand_sweep-lvl1`, `hand_grabbing-lvl2`, `hand_void-removal-lvl1` |
+| `hand/<action>-lvl<N>` | `hand_<action>-lvl<N>`, for example `hand_sweep-lvl1`, `hand_punch-lvl2`, `hand_void-removal-lvl1` |
 | `hand/guiding-missile` | `hand_guiding-missile` |
 | `tile_light`, `tile_dark` | same |
-| `pillar`, `wall`, `clock` | same |
+| `pillar`, `clock` | same |
 | `silhouette_left`, `silhouette_right` | same |
 | `piece_<name>` | same |
 
-Actions: `sweep`, `grabbing`, `wall`, `swipe`, `void-removal`, `punch`.
+Actions: `sweep`, `punch`, `swipe`, `void-removal`, `smash`. The capture sequence uses `hand_grabbing-lvl1`.
 
 ## Conventions
 

@@ -4,13 +4,16 @@ extends Node3D
 ## (telegraph, act, recover) and reports back. It knows nothing about scheduling, cooldowns or
 ## other hands; Hands decides that.
 ##
-## Hands stand directly on the field. During the telegraph a ground hand (sweep, swipe, wall)
-## already stands where it will act; a top-down hand (grab, punch) stays hidden and only its
-## outlined shadow marks where it lands; shadow and outline vanish when it lands. It then falls from above the top of the screen (DROPPING) and
-## the attack starts when it lands. There are no other warnings.
+## Hands stand directly on the field. During the telegraph a ground hand (sweep, swipe) already
+## stands where it will act; a top-down hand (punch, smash) stays hidden and only its outlined
+## shadow marks where it lands. It then falls from above the top of the screen (DROPPING);
+## shadow and outline vanish when it lands, and the action becomes active. There are no other
+## warnings.
 ##
-## Physics: while ACTIVE, a damaging action enables an Area3D on the hand_danger layer and a
-## blocking action (wall) enables a StaticBody3D on the wall layer.
+## Physics: a damaging action enables an Area3D on the hand_danger layer, while ACTIVE for
+## ground hands and while falling for top-down hands (the area moves down with the hand, so it
+## crushes what it falls on). A blocking action (punch) enables a StaticBody3D on the wall layer
+## while ACTIVE: the landed hand is the wall.
 
 signal action_started(hand: Hand, command: HandCommand)
 signal action_became_active(hand: Hand, command: HandCommand)
@@ -35,11 +38,11 @@ var outline_width := Placeholders.OUTLINE_WIDTH_BOARD
 var _command: HandCommand
 var _elapsed := 0.0
 var _visual: Node3D
-var _effect_visual: Node3D
 var _shadow: MeshInstance3D
 var _danger: Area3D
 var _wall: StaticBody3D
-var _shapes: Array[CollisionShape3D] = []
+var _danger_shape: CollisionShape3D
+var _wall_shape: CollisionShape3D
 
 
 func _ready() -> void:
@@ -112,10 +115,11 @@ func _enter(new_state: State) -> void:
 	state = new_state
 	_elapsed = 0.0
 	var active := new_state == State.ACTIVE
-	for shape in _shapes:
-		shape.disabled = not active
-	if _effect_visual != null:
-		_effect_visual.visible = active
+	if _danger_shape != null:
+		var danger_state := State.DROPPING if _command.definition.from_above else State.ACTIVE
+		_danger_shape.disabled = new_state != danger_state
+	if _wall_shape != null:
+		_wall_shape.disabled = not active
 	if _visual != null:
 		ModelAnimator.play(_visual, String(State.keys()[new_state]).to_lower())
 	_update_visual()
@@ -133,11 +137,11 @@ func _clear_nodes() -> void:
 	for child in get_children():
 		child.queue_free()
 	_visual = null
-	_effect_visual = null
 	_shadow = null
 	_danger = null
 	_wall = null
-	_shapes.clear()
+	_danger_shape = null
+	_wall_shape = null
 
 
 func _build_nodes() -> void:
@@ -145,36 +149,38 @@ func _build_nodes() -> void:
 	var definition := _command.definition
 	var volume := definition.volume_size(_command)
 	if definition.shows_hand:
-		_visual = Placeholders.hand(definition.placeholder_name(), Vector3(volume.x, 0.3, volume.z))
+		# A blocking hand stands as tall as its blocking volume, so it reads as a wall.
+		var height := AttackDefinition.VOLUME_HEIGHT if definition.blocks_movement else 0.3
+		_visual = Placeholders.hand(definition.placeholder_name(), Vector3(volume.x, height, volume.z))
 		Placeholders.add_outline(_visual, outline_width)
 		add_child(_visual)
 	if definition.from_above:
 		_shadow = Placeholders.shadow(Vector2(volume.x, volume.z), outline_width)
 		add_child(_shadow)
-	if not definition.damages and not definition.blocks_movement:
-		return
-	var shape_node := CollisionShape3D.new()
-	shape_node.shape = definition.make_shape(_command)
-	shape_node.position.y = AttackDefinition.VOLUME_HEIGHT * 0.5
-	shape_node.disabled = true
-	_shapes.append(shape_node)
 	if definition.damages:
+		_danger_shape = _make_shape(definition)
 		_danger = Area3D.new()
 		_danger.collision_layer = Layers.HAND_DANGER
 		_danger.collision_mask = 0
 		_danger.monitoring = false
 		_danger.monitorable = true
-		_danger.add_child(shape_node)
+		_danger.add_child(_danger_shape)
 		add_child(_danger)
-	elif definition.blocks_movement:
+	if definition.blocks_movement:
+		_wall_shape = _make_shape(definition)
 		_wall = StaticBody3D.new()
 		_wall.collision_layer = Layers.WALL
 		_wall.collision_mask = 0
-		_wall.add_child(shape_node)
+		_wall.add_child(_wall_shape)
 		add_child(_wall)
-		_effect_visual = Placeholders.make("wall", "box", volume, Palette.WALL)
-		_effect_visual.visible = false
-		add_child(_effect_visual)
+
+
+func _make_shape(definition: AttackDefinition) -> CollisionShape3D:
+	var shape_node := CollisionShape3D.new()
+	shape_node.shape = definition.make_shape(_command)
+	shape_node.position.y = AttackDefinition.VOLUME_HEIGHT * 0.5
+	shape_node.disabled = true
+	return shape_node
 
 
 func _update_visual() -> void:
@@ -205,6 +211,9 @@ func _update_visual() -> void:
 		# Top-down hands are not on screen before their attack.
 		_visual.visible = not (definition.from_above and state == State.EMERGING)
 		_visual.position.y = drop
+	if _danger != null:
+		# The crush volume falls with the hand.
+		_danger.position.y = drop
 	visible = true
 
 

@@ -12,22 +12,23 @@ const SWIPE_SPEED := 6.0
 
 @export var kind: String = ""
 @export var level: int = 1
-## Folder/model base name without the level suffix, e.g. "grabbing".
+## Folder/model base name without the level suffix, e.g. "punch".
 @export var asset_name: String = ""
-## Width of a sweep, length of a grab, wall or swipe line, side of a void/punch area.
+## Width of a sweep, length of a swipe line, side of a punch, void-removal or smash square.
 @export var size: int = 1
 ## Seconds between appearing and attacking; Hands never uses less than Constants.MIN_TELEGRAPH.
 @export var telegraph_base: float = 1.0
-## Top-down attacks (grab, punch): the hand stays hidden before the attack and only its
+## Top-down attacks (punch, smash): the hand stays hidden before the attack and only its
 ## shadow shows where it will land.
 @export var from_above: bool = false
 ## False for attacks without a visible hand (void removal pulls from below).
 @export var shows_hand: bool = true
 @export var active_duration: float = 1.0
 @export var recovery: float = 0.35
-## True if the active volume blocks the king (walls).
+## True if the hand blocks the king once it stands on the field (punch).
 @export var blocks_movement: bool = false
-## True if the active volume captures the king.
+## True if the hand captures the king: while active for ground hands, while falling for
+## top-down hands.
 @export var damages: bool = true
 
 
@@ -80,9 +81,6 @@ func _footprint_tiles(command: HandCommand) -> Vector3:
 			if command.side == "left" or command.side == "right":
 				return Vector3(1.0, VOLUME_HEIGHT, size)
 			return Vector3(size, VOLUME_HEIGHT, 1.0)
-		"wall", "grab":
-			# A line of `size` tiles starting at the anchor, horizontal or vertical.
-			return Vector3(size, VOLUME_HEIGHT, 1.0) if command.horizontal else Vector3(1.0, VOLUME_HEIGHT, size)
 		"swipe":
 			# Width across the sliding direction; the hand node is rotated to its heading.
 			return Vector3(size, VOLUME_HEIGHT, 1.0)
@@ -106,11 +104,6 @@ func _rest_tiles(command: HandCommand) -> Vector3:
 					return Vector3(lane_centre, 0.0, 0.5)
 				_:
 					return Vector3(lane_centre, 0.0, last)
-		"wall", "grab":
-			var half := size / 2.0
-			if command.horizontal:
-				return Vector3(anchor.x + half, 0.0, anchor.y + 0.5)
-			return Vector3(anchor.x + 0.5, 0.0, anchor.y + half)
 		_:
 			return Vector3(anchor.x + size / 2.0, 0.0, anchor.y + size / 2.0)
 

@@ -132,7 +132,7 @@ func _on_director_finished() -> void:
 	_ended = true
 	_hands.clear()
 	_king.freeze()
-	context.upgrades = {"sweep": 2, "grab": 2, "wall": 2}
+	context.upgrades = {"sweep": 2, "punch": 2}
 	_play_collapse()
 
 

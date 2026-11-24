@@ -5,7 +5,7 @@ extends RefCounted
 
 signal finished
 
-## Requests kept waiting so a blocked wall never starves the hands.
+## Requests kept waiting so a free hand always has something to start.
 const QUEUE_TARGET := 2
 const FIRST_HAND_DELAY := 1.4
 const LATER_HAND_DELAY := 1.0
@@ -72,8 +72,6 @@ func _action_interval() -> float:
 
 func _stock_queue() -> void:
 	while _hands.queue_size() < QUEUE_TARGET:
-		var options: Array[String] = ["sweep", "grab"]
-		if elapsed >= 30.0 and not _hands.has_queued("wall"):
-			options.append("wall")
+		var options: Array[String] = ["sweep", "punch"]
 		var kind := options[_rng.randi_range(0, options.size() - 1)]
 		_hands.request(kind, attack_level())

@@ -28,9 +28,8 @@ The king briefly acknowledges the change: he feels no longer bound to chess rule
 All hands remain white, glowing celestial entities. Phase 2 attacks have less explicit warning than Phase 1, but must retain subtle readable physical cues.
 
 - **Flat swipe:** a flat hand appears just inside the current camera frame, then physically slides across the field from every direction at arbitrary angles and only disappears after leaving the frame.
-- **Top-down grab:** a hand descends from above and creates a readable square or circular danger area, depending on its upgrade state.
-- **Void removal and top-down punch:** these actions unlock at 1:00 and permanently destroy their affected pillar tiles.
-- **Wall placement:** a hand may create a temporary blocking line only while at least one other hand performs a non-wall action.
+- **Top-down punch:** a hand falls from above onto its shadow, crushes the king on the way down, then stays as a temporary block (1×1, upgraded 2×2).
+- **Void removal and smash:** these actions unlock at 1:00 and permanently destroy their affected pillar tiles.
 - **Guiding missile hand:** the first arrives at 1:00 and the second at 3:00. It accelerates slowly toward a maximum speed three times the king's normal speed, while its turn rate declines as it becomes faster.
 - **Escalation:** the Phase 2 hand count and ability unlocks follow the [enemy curve](enemy_curve.md). Every hand remains limited to one action at a time; up to three hands may coordinate deliberate pressure in the final product.
 

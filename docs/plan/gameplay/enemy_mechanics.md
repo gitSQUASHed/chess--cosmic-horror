@@ -8,28 +8,26 @@ This document defines the product enemy vocabulary. Exact values are balancing p
 - A hand owns at most one action at a time. It cannot begin a second action until its current action ends.
 - Hands may act concurrently. Planned coordination may combine at most three hands in one deliberate setup.
 - A hand's action cooldown decreases as its phase progresses and never drops below zero.
-- Every action except the guiding missile hand has a telegraph of at least one second between the warning appearing and the attack. The telegraph never shrinks; instead, the attacks themselves get faster as the phase progresses (movement, the fall of top-down hands, strikes and recovery; walls keep their blocking time). Phase 1 attacks start slow (0.6 times the base speed) and reach 1.4 times by its end.
+- Every action except the guiding missile hand has a telegraph of at least one second between the warning appearing and the attack. The telegraph never shrinks; instead, the attacks themselves get faster as the phase progresses (movement, the fall of top-down hands, strikes and recovery; a landed punch keeps its blocking time). Phase 1 attacks start slow (0.6 times the base speed) and reach 1.4 times by its end.
 - In Phase 2, simultaneous action centres may not occupy the same tile. Their effect areas may overlap.
-- A wall can only be placed while at least one other hand is performing a non-wall action.
 
 ## Action catalogue
 
 | Action | Availability | Basic form | Upgrade |
 |---|---|---|---|
 | Side sweep | Phase 1 | A 1-tile-wide hand sweeps across one board lane. | 3 tiles wide. |
-| Top-down grab | Both phases | 1×1 danger area. | 3×1 horizontal or vertical danger line. |
-| Wall | Both phases | Temporary 1×1 blocking tile. | Temporary 3×1 horizontal or vertical blocking line. |
+| Top-down punch | Both phases | A 1×1 hand falls from above. It crushes the king while falling, then stays on the tile as a temporary wall. | 2×2 square. |
 | Flat swipe | Phase 2 | A 1×1 hand appears just inside the camera frame, slides in any direction or angle, and persists until it leaves the frame. | 3×1 swipe. |
 | Void removal | Phase 2 | Removes one tile pillar. | Removes a 2×2 tile area. |
-| Top-down punch | Phase 2 | Destroys one tile beneath the impact point. | Destroys a 3×3 tile area. |
+| Smash | Phase 2 | A hand falls from above and destroys one tile beneath the impact point. | Destroys a 3×3 tile area. |
 
 ## Attack warnings
 
 These are the only warnings. There are no ground markers, labels or glow changes.
 
 - Hands stand directly on the field, never floating above it.
-- **Ground hands** (side sweep, flat swipe, wall) appear on the field where they will act, wait for the telegraph, then act.
-- **Top-down hands** (grab, punch) are not on screen before the attack. During the telegraph only their shadow, framed by a white outline, shows on the field where they will land; then the hand falls from above the top of the screen onto the shadow. Shadow and outline stay until the hand lands, and the attack takes effect at that moment.
+- **Ground hands** (side sweep, flat swipe) appear on the field where they will act, wait for the telegraph, then act.
+- **Top-down hands** (punch, smash) are not on screen before the attack. During the telegraph only their shadow, framed by a white outline, shows on the field where they will land; then the hand falls from above the top of the screen onto the shadow. Shadow and outline stay until the hand lands. A punch crushes the king while it falls and blocks once it has landed; a smash destroys its tiles when it lands.
 - **Void removal** has no visible hand. The pillars it will remove go completely dark with an outline for one second, then are pulled down; the outline disappears as they go.
 - In both phases the king and every hand, including guiding hands and the capturing hand, have a solid white outline that light and shadow do not affect.
 
@@ -44,9 +42,9 @@ These are the only warnings. There are no ground markers, labels or glow changes
 
 The product should turn independently readable actions into combinations without violating the one-action-per-hand rule:
 
-- Place walls to reduce viable dodge routes.
+- Land punches to block viable dodge routes.
 - Send a swipe through the remaining open route.
-- Put a grab at a predicted exit point.
+- Drop a punch on a predicted exit point.
 - Destroy pillars beside or behind a jumping player.
 - Use guiding missile pressure to steer the player toward active areas.
 

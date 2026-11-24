@@ -115,19 +115,11 @@ func _place(definition: AttackDefinition, _hand_index: int) -> HandCommand:
 		_place_swipe(command, king_position, right, down, rng)
 		return command
 	var offset := Vector2(rng.randf_range(-8.0, 8.0), rng.randf_range(-5.0, 5.0))
-	if definition.kind != "grab" and rng.randf() < 0.5:
+	if definition.kind != "punch" and rng.randf() < 0.5:
 		offset = Vector2(rng.randf_range(-1.5, 1.5), rng.randf_range(-1.5, 1.5))
 	var target := PillarField.world_to_tile(king_position + (right * offset.x + down * offset.y) * TILE)
-	command.anchor = target
-	if definition.kind == "wall":
-		command.horizontal = rng.randi_range(0, 1) == 0
-	elif definition.kind == "grab":
-		# Centre the grab line on the target tile.
-		command.horizontal = rng.randi_range(0, 1) == 0
-		var half := int(definition.size / 2.0)
-		command.anchor = target - (Vector2i(half, 0) if command.horizontal else Vector2i(0, half))
-	else:
-		command.anchor = target - Vector2i(int(definition.size / 2.0), int(definition.size / 2.0))
+	# The square's first tile, so it covers the target tile.
+	command.anchor = target - Vector2i(int(definition.size / 2.0), int(definition.size / 2.0))
 	return command
 
 
@@ -194,7 +186,7 @@ func _on_action_telegraphed(_hand: Hand, command: HandCommand) -> void:
 
 func _on_action_activated(_hand: Hand, command: HandCommand) -> void:
 	var kind := command.definition.kind
-	if kind == "void_removal" or kind == "punch":
+	if kind == "void_removal" or kind == "smash":
 		_field.remove_area(command.anchor, command.definition.size)
 
 

@@ -10,7 +10,6 @@ const KING_BLACK_SIDE := Color("1f7a36")
 const TILE_LIGHT := Color("bdbdbd")
 const TILE_DARK := Color("8c8c8c")
 const PILLAR := Color("c4c4c4")
-const WALL := Color("a8a8ff")
 const PROP := Color("b8b8b8")
 const VOID_BLACK := Color("050a07")
 
