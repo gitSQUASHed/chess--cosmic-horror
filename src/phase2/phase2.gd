@@ -58,6 +58,8 @@ func _ready() -> void:
 	_hands.forbid_shared_centers = true
 	_hands.placement_override = Callable(self, "_place")
 	_hands.outline_width = Placeholders.OUTLINE_WIDTH_FIELD
+	_hands.cull_center = _king
+	_hands.cull_radius = _view_radius()
 	_hands.action_telegraphed.connect(_on_action_telegraphed)
 	_hands.action_activated.connect(_on_action_activated)
 	add_child(_hands)
@@ -94,6 +96,7 @@ func _process(delta: float) -> void:
 	threat = 0.0
 	for guiding in _guiding:
 		threat = maxf(threat, guiding.threat(_king.global_position))
+		guiding.visible = _in_view(guiding.global_position)
 	context.effects.set_threat(threat)
 	if Input.is_action_just_pressed("jump") and _at_escape_edge():
 		_escape()
@@ -270,13 +273,50 @@ func _escape() -> void:
 
 
 ## The Phase 1 clock, huge, floating in the void beyond the escape edge. It stays level with the
-## king along the edge, so it is in view whenever he gets close.
+## king along the edge and is solid: landing on its top, by jumping or walking off the edge,
+## triggers the escape ending.
 func _build_clock() -> void:
 	_clock = Placeholders.clock()
 	_clock.scale = Vector3.ONE * CLOCK_SCALE
 	Placeholders.set_clock_time(_clock, "0:00")
+	# Unscaled clock size; the node's scale enlarges the shapes with the model.
+	var size := Vector3(1.6, 2.0, 0.6)
+	var body := StaticBody3D.new()
+	body.collision_layer = Layers.PILLAR
+	body.collision_mask = 0
+	var body_shape := CollisionShape3D.new()
+	var box := BoxShape3D.new()
+	box.size = size
+	body_shape.shape = box
+	body_shape.position.y = size.y * 0.5
+	body.add_child(body_shape)
+	_clock.add_child(body)
+	var landing := Area3D.new()
+	landing.collision_layer = Layers.TRIGGER
+	landing.collision_mask = Layers.KING
+	landing.monitoring = true
+	landing.monitorable = false
+	var landing_shape := CollisionShape3D.new()
+	var slab := BoxShape3D.new()
+	slab.size = Vector3(size.x, 0.1, size.z)
+	landing_shape.shape = slab
+	landing_shape.position.y = size.y + 0.05
+	landing.add_child(landing_shape)
+	landing.body_entered.connect(_on_clock_reached)
+	_clock.add_child(landing)
 	add_child(_clock)
 	_follow_clock()
+
+
+func _on_clock_reached(body: Node3D) -> void:
+	if body != _king or _ended:
+		return
+	_stop_everything()
+	_king.freeze()
+	context.camera.shake(0.2, 0.25)
+	await get_tree().create_timer(0.6).timeout
+	if is_inside_tree():
+		_finish_with_fade("escaped", false)
 
 
 func _follow_clock() -> void:
@@ -284,6 +324,18 @@ func _follow_clock() -> void:
 	var border := PillarField.tile_to_world(Vector2i(_field.edge_x(), 0)).x + side * TILE * 0.5
 	var height := 2.0 * CLOCK_SCALE
 	_clock.global_position = Vector3(border + side * CLOCK_GAP, PillarField.SURFACE_Y - CLOCK_DROP - height, _king.global_position.z)
+	# Only in view once the king is within the revealed radius of the edge.
+	_clock.visible = absf(_king.global_position.x - border) <= _view_radius()
+
+
+## Radius in metres around the king inside which the field, hands and clock are shown.
+func _view_radius() -> float:
+	return _field.reveal_radius * TILE
+
+
+func _in_view(point: Vector3) -> bool:
+	var offset := point - _king.global_position
+	return Vector2(offset.x, offset.z).length() <= _view_radius()
 
 
 ## Centre of the clock's top surface, where the king lands in the good ending.

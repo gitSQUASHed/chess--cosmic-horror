@@ -36,6 +36,10 @@ const SHADOW_FAINT := 0.35
 const SHADOW_FULL := 0.85
 
 var state: State = State.IDLE
+## Phase 2: the hand is only drawn within `cull_radius` metres (horizontally) of this node, so
+## nothing shows outside the revealed field. Null draws it everywhere.
+var cull_center: Node3D
+var cull_radius := 0.0
 ## Thickness of the hand model's white outline, set by Hands per phase.
 var outline_width := Placeholders.OUTLINE_WIDTH_BOARD
 
@@ -225,7 +229,14 @@ func _update_visual() -> void:
 	if _danger != null:
 		# The crush volume falls with the hand.
 		_danger.position.y = drop
-	visible = true
+	visible = _in_view()
+
+
+func _in_view() -> bool:
+	if cull_center == null or not is_instance_valid(cull_center):
+		return true
+	var offset := global_position - cull_center.global_position
+	return Vector2(offset.x, offset.z).length() <= cull_radius
 
 
 func _drop_time() -> float:

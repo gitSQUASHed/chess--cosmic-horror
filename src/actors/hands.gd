@@ -26,6 +26,9 @@ var telegraph_time := 1.0
 var surface_y := 0.0
 ## Thickness of the white outline every hand gets (Placeholders.OUTLINE_WIDTH_*).
 var outline_width := Placeholders.OUTLINE_WIDTH_BOARD
+## Phase 2: hands are only drawn within cull_radius metres of cull_center (see Hand).
+var cull_center: Node3D
+var cull_radius := 0.0
 ## Phase 2 rule: two simultaneous actions may not share an anchor tile.
 var forbid_shared_centers := false
 ## Phase 2: returns a placement for the request, or null to use the board placement.
@@ -137,6 +140,8 @@ func _assign_requests() -> void:
 				continue
 			_queue.remove_at(queue_index)
 			hand.outline_width = outline_width
+			hand.cull_center = cull_center
+			hand.cull_radius = cull_radius
 			hand.execute(command)
 			break
 
