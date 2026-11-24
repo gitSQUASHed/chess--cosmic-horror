@@ -6,8 +6,9 @@ render_mode cull_back, diffuse_lambert, specular_disabled;
 // that is still rising or already sinking is darker too.
 
 uniform vec3 albedo : source_color = vec3(0.77);
-// Multiplier set by Placeholders.set_brightness (0 = black, as for a marked pillar).
-uniform float brightness = 1.0;
+// Per-pillar multiplier set by Placeholders.set_brightness (0 = black, as for a marked pillar).
+// An instance uniform, so every pillar shares one material and can be batched.
+instance uniform float brightness = 1.0;
 uniform vec3 mist_color : source_color = vec3(0.02, 0.04, 0.03);
 // World height of the pillar tops; the mist starts just below it.
 uniform float surface_y = 0.0;

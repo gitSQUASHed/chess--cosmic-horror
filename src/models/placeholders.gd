@@ -9,6 +9,14 @@ const PILLAR_SHADER := preload("res://src/models/pillar.gdshader")
 const OUTLINE_WIDTH_BOARD := 0.05
 const OUTLINE_WIDTH_FIELD := 0.12
 
+## Real-model lookups by placeholder name (PackedScene, or null when there is none), so the
+## disk is checked once per name instead of once per model built.
+static var _real_models: Dictionary = {}
+## Primitive meshes by shape and size, shared by every model of that shape.
+static var _meshes: Dictionary = {}
+## The one material all pillars share; brightness is a per-instance shader parameter.
+static var _pillar_material: ShaderMaterial
+
 
 ## Builds a placeholder (or the real model, if present) for `placeholder_name`.
 static func make(placeholder_name: String, shape: String, size: Vector3, colour: Color) -> Node3D:
@@ -19,22 +27,7 @@ static func make(placeholder_name: String, shape: String, size: Vector3, colour:
 	root.name = placeholder_name.replace("/", "_")
 	var body := MeshInstance3D.new()
 	body.name = "Body"
-	match shape:
-		"capsule":
-			var capsule := CapsuleMesh.new()
-			capsule.radius = minf(size.x, size.z) * 0.5
-			capsule.height = size.y
-			body.mesh = capsule
-		"cylinder":
-			var cylinder := CylinderMesh.new()
-			cylinder.top_radius = size.x * 0.5
-			cylinder.bottom_radius = size.x * 0.5
-			cylinder.height = size.y
-			body.mesh = cylinder
-		_:
-			var box := BoxMesh.new()
-			box.size = size
-			body.mesh = box
+	body.mesh = _mesh(shape, size)
 	var material := StandardMaterial3D.new()
 	material.albedo_color = colour
 	material.roughness = 0.9
@@ -46,21 +39,51 @@ static func make(placeholder_name: String, shape: String, size: Vector3, colour:
 
 ## Hook for T-20: returns an instance of res://src/assets/models/<name>.tscn or .glb if it exists.
 static func try_real_model(placeholder_name: String) -> Node3D:
+	if not _real_models.has(placeholder_name):
+		_real_models[placeholder_name] = _find_real_model(placeholder_name)
+	var scene := _real_models[placeholder_name] as PackedScene
+	return scene.instantiate() as Node3D if scene != null else null
+
+
+static func _find_real_model(placeholder_name: String) -> PackedScene:
 	var base := MODEL_DIR + placeholder_name.replace("/", "_")
 	for extension in [".tscn", ".glb"]:
 		if ResourceLoader.exists(base + extension):
 			var scene := load(base + extension) as PackedScene
 			if scene != null:
-				var instance := scene.instantiate() as Node3D
-				if instance != null:
-					return instance
+				return scene
 	return null
+
+
+static func _mesh(shape: String, size: Vector3) -> Mesh:
+	var key := "%s:%s" % [shape, size]
+	if _meshes.has(key):
+		return _meshes[key] as Mesh
+	var mesh: Mesh
+	match shape:
+		"capsule":
+			var capsule := CapsuleMesh.new()
+			capsule.radius = minf(size.x, size.z) * 0.5
+			capsule.height = size.y
+			mesh = capsule
+		"cylinder":
+			var cylinder := CylinderMesh.new()
+			cylinder.top_radius = size.x * 0.5
+			cylinder.bottom_radius = size.x * 0.5
+			cylinder.height = size.y
+			mesh = cylinder
+		_:
+			var box := BoxMesh.new()
+			box.size = size
+			mesh = box
+	_meshes[key] = mesh
+	return mesh
 
 
 static func set_brightness(model: Node3D, brightness: float) -> void:
 	var body := model.get_node_or_null("Body") as MeshInstance3D
 	if body != null and body.material_override is ShaderMaterial:
-		(body.material_override as ShaderMaterial).set_shader_parameter("brightness", brightness)
+		body.set_instance_shader_parameter("brightness", brightness)
 		return
 	if body != null and body.material_override is StandardMaterial3D:
 		var material := body.material_override as StandardMaterial3D
@@ -225,12 +248,13 @@ static func pillar(width: float = 1.0, height: float = 1.0, surface_y: float = 0
 	var model := make("pillar", "box", Vector3(width * 0.94, height, width * 0.94), Palette.PILLAR)
 	var body := model.get_node_or_null("Body") as MeshInstance3D
 	if body != null:
-		var material := ShaderMaterial.new()
-		material.shader = PILLAR_SHADER
-		material.set_shader_parameter("albedo", Palette.PILLAR)
-		material.set_shader_parameter("mist_color", Palette.VOID_BLACK)
-		material.set_shader_parameter("surface_y", surface_y)
-		body.material_override = material
+		if _pillar_material == null:
+			_pillar_material = ShaderMaterial.new()
+			_pillar_material.shader = PILLAR_SHADER
+			_pillar_material.set_shader_parameter("albedo", Palette.PILLAR)
+			_pillar_material.set_shader_parameter("mist_color", Palette.VOID_BLACK)
+		_pillar_material.set_shader_parameter("surface_y", surface_y)
+		body.material_override = _pillar_material
 	return model
 
 

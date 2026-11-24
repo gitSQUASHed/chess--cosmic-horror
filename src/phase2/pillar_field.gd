@@ -34,6 +34,12 @@ var _removed: Dictionary = {}
 var _spine: Dictionary = {}
 var _pillars: Dictionary = {}
 var _center_tile := Vector2i(1000000, 1000000)
+## Hidden pillars waiting to be moved to newly revealed tiles. Filled at setup with enough
+## pillars for the whole revealed area, so walking only moves existing pillars; pillars that
+## sink or are removed go back here.
+var _pool: Array[Node3D] = []
+## One collision shape shared by every pillar body.
+var _pillar_shape: BoxShape3D
 
 
 func setup(run_seed: int, escape_direction: int) -> void:
@@ -41,6 +47,7 @@ func setup(run_seed: int, escape_direction: int) -> void:
 	escape_side = escape_direction
 	_build_spine()
 	_build_void_area()
+	_prebuild_pillars()
 
 
 ## x coordinate of the escape edge column.
@@ -120,13 +127,13 @@ func remove_tile(tile: Vector2i) -> void:
 	var pillar := _pillars[tile] as Node3D
 	_pillars.erase(tile)
 	_disable_collision(pillar)
-	var tween := create_tween().set_parallel(true)
+	var tween := _tween_pillar(pillar).set_parallel(true)
 	tween.tween_property(pillar, "position:y", HIDDEN_Y - 4.0, 1.2).set_ease(Tween.EASE_IN)
 	var from_brightness := 0.0 if pillar.has_meta("marked") else 1.0
 	# The attack is happening: the dark outlined warning is no longer shown.
 	Placeholders.remove_outline(pillar)
 	tween.tween_method(func(value: float) -> void: Placeholders.set_brightness(pillar, value), from_brightness, 0.0, 1.2)
-	tween.chain().tween_callback(pillar.queue_free)
+	tween.chain().tween_callback(_recycle.bind(pillar))
 
 
 ## Pillars leaving the revealed radius sink down into the void, darken, and are freed.
@@ -134,18 +141,39 @@ func _sink(cell: Vector2i) -> void:
 	var pillar := _pillars[cell] as Node3D
 	_pillars.erase(cell)
 	_disable_collision(pillar)
-	var tween := create_tween().set_parallel(true)
+	var tween := _tween_pillar(pillar).set_parallel(true)
 	tween.tween_property(pillar, "position:y", HIDDEN_Y - 2.0, 0.7).set_ease(Tween.EASE_IN)
 	tween.tween_method(func(value: float) -> void: Placeholders.set_brightness(pillar, value), 1.0, 0.0, 0.7)
-	tween.chain().tween_callback(pillar.queue_free)
+	tween.chain().tween_callback(_recycle.bind(pillar))
+
+
+## A fresh tween for `pillar` that replaces any still running on it (rising, sinking).
+func _tween_pillar(pillar: Node3D) -> Tween:
+	var previous := pillar.get_meta("tween", null) as Tween
+	if previous != null and previous.is_valid():
+		previous.kill()
+	var tween := create_tween()
+	pillar.set_meta("tween", tween)
+	return tween
+
+
+func _recycle(pillar: Node3D) -> void:
+	pillar.visible = false
+	if pillar.has_meta("marked"):
+		pillar.remove_meta("marked")
+	_pool.append(pillar)
 
 
 func _disable_collision(pillar: Node3D) -> void:
+	_set_collision(pillar, false)
+
+
+func _set_collision(pillar: Node3D, enabled: bool) -> void:
 	for child in pillar.get_children():
 		if child is StaticBody3D:
 			for shape in child.get_children():
 				if shape is CollisionShape3D:
-					shape.disabled = true
+					shape.disabled = not enabled
 
 
 func is_removed(tile: Vector2i) -> bool:
@@ -162,25 +190,50 @@ func pillar_count() -> int:
 
 
 func _spawn(cell: Vector2i) -> void:
-	var pillar := Placeholders.pillar(TILE_SIZE, PILLAR_HEIGHT, SURFACE_Y)
+	var pillar: Node3D
+	if _pool.is_empty():
+		pillar = _build_pillar()
+	else:
+		pillar = _pool.pop_back()
+		pillar.visible = true
+		_set_collision(pillar, true)
 	var shade := 0.82 + 0.18 * _noise(cell + Vector2i(7919, 104729))
 	Placeholders.set_brightness(pillar, shade)
+	# The pillar model's origin is its base; its top surface is at SURFACE_Y.
+	pillar.position = tile_to_world(cell) + Vector3(0.0, HIDDEN_Y - SURFACE_Y, 0.0)
+	_pillars[cell] = pillar
+	var tween := _tween_pillar(pillar)
+	tween.tween_property(pillar, "position:y", SURFACE_Y - PILLAR_HEIGHT, 0.6 + _noise(cell + Vector2i(31, 17)) * 0.4).set_ease(Tween.EASE_OUT)
+
+
+## Builds every pillar the field can need at once: the revealed disc up to the sink limit, plus
+## two rings for pillars still sinking out of view.
+func _prebuild_pillars() -> void:
+	var sink_limit := reveal_radius + 1.5
+	var count := int(ceil(PI * sink_limit * sink_limit)) + 2 * int(ceil(TAU * sink_limit))
+	for index in range(count):
+		var pillar := _build_pillar()
+		pillar.visible = false
+		_set_collision(pillar, false)
+		_pool.append(pillar)
+
+
+## Builds one pillar. Only used at setup, or as a fallback if the prebuilt set ever runs out.
+func _build_pillar() -> Node3D:
+	var pillar := Placeholders.pillar(TILE_SIZE, PILLAR_HEIGHT, SURFACE_Y)
+	if _pillar_shape == null:
+		_pillar_shape = BoxShape3D.new()
+		_pillar_shape.size = Vector3(TILE_SIZE, PILLAR_HEIGHT, TILE_SIZE)
 	var body := StaticBody3D.new()
 	body.collision_layer = Layers.PILLAR
 	body.collision_mask = 0
 	var shape_node := CollisionShape3D.new()
-	var shape := BoxShape3D.new()
-	shape.size = Vector3(TILE_SIZE, PILLAR_HEIGHT, TILE_SIZE)
-	shape_node.shape = shape
+	shape_node.shape = _pillar_shape
 	shape_node.position.y = PILLAR_HEIGHT * 0.5
 	body.add_child(shape_node)
 	pillar.add_child(body)
-	# The pillar model's origin is its base; its top surface is at SURFACE_Y.
-	pillar.position = tile_to_world(cell) + Vector3(0.0, HIDDEN_Y - SURFACE_Y, 0.0)
 	add_child(pillar)
-	_pillars[cell] = pillar
-	var tween := create_tween()
-	tween.tween_property(pillar, "position:y", SURFACE_Y - PILLAR_HEIGHT, 0.6 + _noise(cell + Vector2i(31, 17)) * 0.4).set_ease(Tween.EASE_OUT)
+	return pillar
 
 
 ## Two layers of value noise in 0..1, deterministic per seed and tile.
